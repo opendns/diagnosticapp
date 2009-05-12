@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using ProgressControls;
 
 namespace OpenDnsDiagnostic
 {
@@ -143,11 +144,14 @@ namespace OpenDnsDiagnostic
             Processes = new List<ProcessStatus>();
             Processes.Add(new ProcessStatus("tracert", "208.67.222.222"));
             Processes.Add(new ProcessStatus("tracert", "208.67.220.220"));
-
+            Processes.Add(new ProcessStatus("nslookup", "myip.opendns.com"));
+            Processes.Add(new ProcessStatus("nslookup", "-type=txt which.opendns.com. 208.67.222.222"));
+            Processes.Add(new ProcessStatus("ipconfig", "/all"));
             foreach (var ps in Processes)
             {
                 StartProcess(ps);
             }
+
             UiDisable();
         }
 
