@@ -33,6 +33,8 @@ namespace OpenDnsDiagnostic
         public Process Process;
         public string StdOut;
         public string StdErr;
+        public Label Label;
+        public ProgressIndicator ProgressIndicator;
 
         public ProcessStatus(string exe, string args)
         {
@@ -45,6 +47,8 @@ namespace OpenDnsDiagnostic
             StdErr = null;
             StdOut = null;
             Process = null;
+            Label = null;
+            ProgressIndicator = null;
         }
     }
 
@@ -62,8 +66,21 @@ namespace OpenDnsDiagnostic
             this.Close();
         }
 
+        private void RemoveProcessesInfo()
+        {
+            foreach (var ps in Processes)
+            {
+                var l = ps.Label;
+                if (l != null)
+                    this.Controls.Remove(l);
+                var pi = ps.ProgressIndicator;
+                if (pi != null)
+                    this.Controls.Remove(pi);
+            }
+        }
         private void NotifyUiAllProcessesFinished()
         {
+            RemoveProcessesInfo();
             UiEnable();
         }
 
@@ -98,6 +115,7 @@ namespace OpenDnsDiagnostic
                 ps.StdOut = proc.StandardOutput.ReadToEnd();
                 ps.StdErr = proc.StandardError.ReadToEnd();
                 ps.Finished = true;
+                ps.ProgressIndicator.Stop();
                 NotifyUiProcessFinished();
                 return;
             }
@@ -139,6 +157,33 @@ namespace OpenDnsDiagnostic
             this.textBox1.Enabled = false;
         }
 
+        private void LayoutProcessesInfo()
+        {
+            int x = 24;
+            int progressDx = 20;
+            int y = this.textBox1.Location.Y + 26;
+            foreach (var ps in Processes)
+            {
+                int dy = 13;
+                var pi = new ProgressIndicator();
+                pi.Location = new Point(x, y);
+                pi.Size = new Size(progressDx, dy);
+                ps.ProgressIndicator = pi;
+                this.Controls.Add(pi);
+                pi.Start();
+
+                var l = new Label();
+                l.AutoSize = true;
+                l.Location = new System.Drawing.Point(x + progressDx + 4, y);
+                l.Size = new System.Drawing.Size(262, dy);
+                l.Text = ps.DisplayName;
+                l.Show();
+                ps.Label = l;
+                this.Controls.Add(l);
+                y += dy + 4;
+            }
+        }
+
         private void runAllTests()
         {
             Processes = new List<ProcessStatus>();
@@ -151,7 +196,7 @@ namespace OpenDnsDiagnostic
             {
                 StartProcess(ps);
             }
-
+            LayoutProcessesInfo();
             UiDisable();
         }
 
