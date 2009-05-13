@@ -11,54 +11,18 @@ using ProgressControls;
 
 namespace OpenDnsDiagnostic
 {
-    class ProcessStatus
-    {
-        private string _displayName;
-        public string DisplayName {
-            get {
-                if (null != _displayName)
-                    return _displayName;
-                if (null == Args)
-                    return Exe;
-                return Exe + " " + Args;
-            }
-            set {
-                _displayName = value;
-            }
-        }
-        public string Exe;
-        public string Args;
-        public bool Finished;
-        public bool FailedToStart;
-        public Process Process;
-        public string StdOut;
-        public string StdErr;
-        public Label Label;
-        public ProgressIndicator ProgressIndicator;
-
-        public ProcessStatus(string exe, string args)
-        {
-            Exe = exe;
-            Debug.Assert(null != exe);
-            Args = args;
-            FailedToStart = false;
-            Finished = false;
-            _displayName = null;
-            StdErr = null;
-            StdOut = null;
-            Process = null;
-            Label = null;
-            ProgressIndicator = null;
-        }
-    }
-
     public partial class Form1 : Form
     {
+        public static string APP_VER = "0.1";
         List<ProcessStatus> Processes;
+        LinkLabel SeeResultsLabel;
+        Label FinishedCountLabel;
+        string ResultsFileName;
 
         public Form1()
         {
             InitializeComponent();
+            this.Text = "OpenDNS Diagnostic v" + APP_VER;
         }
 
         private void buttonExit_Click(object sender, EventArgs e)
@@ -68,6 +32,10 @@ namespace OpenDnsDiagnostic
 
         private void RemoveProcessesInfo()
         {
+            this.Controls.Remove(FinishedCountLabel);
+            this.Controls.Remove(SeeResultsLabel);
+            if (null == Processes)
+                return;
             foreach (var ps in Processes)
             {
                 var l = ps.Label;
@@ -78,36 +46,76 @@ namespace OpenDnsDiagnostic
                     this.Controls.Remove(pi);
             }
         }
+
+        private void SaveResultsToTempFile()
+        {
+            using (FileStream fs = File.OpenWrite(ResultsFileName))
+            {
+                using (StreamWriter sw = new StreamWriter(fs, Encoding.UTF8))
+                {
+                    foreach (var ps in Processes)
+                    {
+                        sw.WriteLine("Results for: " + ps.DisplayName);
+                        if (ps.StdOut != null && ps.StdOut.Length > 0)
+                        {
+                            sw.WriteLine("stdout:");
+                            sw.WriteLine(ps.StdOut);
+                        }
+
+                        if (ps.StdErr != null && ps.StdErr.Length > 0)
+                        {
+                            sw.WriteLine("stderr:");
+                            sw.WriteLine(ps.StdErr);
+                        }
+                    }
+                }
+            }
+        }
+
         private void NotifyUiAllProcessesFinished()
         {
-            RemoveProcessesInfo();
+            try
+            {
+                SaveResultsToTempFile();
+            }
+            catch (Exception)
+            {
+            }
+            SeeResultsLabel.Visible = true;
+            FinishedCountLabel.Visible = false;
             UiEnable();
         }
 
-        delegate void NotifyUiProcessFinishedDelegate();
         private void NotifyUiProcessFinished()
+        {
+            int finishedCount = 0;
+            foreach (var ps in Processes)
+            {
+                if (ps.Finished)
+                    finishedCount += 1;
+            }
+
+            //int maxLineDx = this.Size.Width;
+            FinishedCountLabel.Text = String.Format("Finished {0} out of {1} tests.", finishedCount, Processes.Count);
+            //Size preferredSize = FinishedCountLabel.GetPreferredSize(new Size(maxLineDx, 13));
+            //FinishedCountLabel.Size = preferredSize;
+            if (finishedCount == Processes.Count)
+                NotifyUiAllProcessesFinished();
+        }
+
+        delegate void process_ExitedDelegate(object sender, System.EventArgs e);
+        private void process_Exited(object sender, System.EventArgs e)
         {
             if (this.InvokeRequired)
             {
-                var myDelegate = new NotifyUiProcessFinishedDelegate(NotifyUiProcessFinished);
-                this.BeginInvoke(myDelegate);
+                var myDelegate = new process_ExitedDelegate(process_Exited);
+                this.BeginInvoke(myDelegate, new object[] { sender, e });
                 return;
             }
 
-            foreach (var ps in Processes)
-            {
-                if (!ps.Finished)
-                    return;
-            }
-
-            NotifyUiAllProcessesFinished();
-        }
-
-        private void process_Exited(object sender, System.EventArgs e)
-        {
             var proc = sender as Process;
             Debug.Assert(proc != null);
-            foreach (var ps in Processes) 
+            foreach (var ps in Processes)
             {
                 if (proc != ps.Process)
                     continue;
@@ -116,10 +124,12 @@ namespace OpenDnsDiagnostic
                 ps.StdErr = proc.StandardError.ReadToEnd();
                 ps.Finished = true;
                 ps.ProgressIndicator.Stop();
-                NotifyUiProcessFinished();
-                return;
+                ps.ProgressIndicator.Visible = false;
+                ps.Label.Text = "Finished: " + ps.Label.Text;
+                ps.Label.ForeColor= System.Drawing.Color.Gray;
             }
-            Debug.Assert(false);
+
+            NotifyUiProcessFinished();
         }
 
         private void StartProcess(ProcessStatus ps)
@@ -159,33 +169,64 @@ namespace OpenDnsDiagnostic
 
         private void LayoutProcessesInfo()
         {
-            int x = 24;
-            int progressDx = 20;
-            int y = this.textBox1.Location.Y + 26;
+            int x = this.label1.Location.X;
+            const int progressDx = 20;
+            int y = this.textBox1.Location.Y + 30;
+            Size preferredSize;
+            int maxLineDx = this.Size.Width - 2 * x;
             foreach (var ps in Processes)
             {
-                int dy = 13;
+                var l = new Label();
+                l.ForeColor = System.Drawing.Color.Black;
+                l.AutoSize = true;
+                l.Location = new System.Drawing.Point(x, y);
+                l.Text = ps.DisplayName;
+                preferredSize = l.GetPreferredSize(new Size(maxLineDx, 13));
+                l.Size = preferredSize;
+                l.Show();
+                ps.Label = l;
+                this.Controls.Add(l);
+                int dy = preferredSize.Height;
+                int dx = preferredSize.Width;
+
                 var pi = new ProgressIndicator();
-                pi.Location = new Point(x, y);
+                pi.Location = new Point(x + dx + 4, y-3);
                 pi.Size = new Size(progressDx, dy);
                 ps.ProgressIndicator = pi;
                 this.Controls.Add(pi);
                 pi.Start();
 
-                var l = new Label();
-                l.AutoSize = true;
-                l.Location = new System.Drawing.Point(x + progressDx + 4, y);
-                l.Size = new System.Drawing.Size(262, dy);
-                l.Text = ps.DisplayName;
-                l.Show();
-                ps.Label = l;
-                this.Controls.Add(l);
-                y += dy + 4;
+                y += (dy + 6);
             }
+            FinishedCountLabel = new Label();
+            FinishedCountLabel.Visible = true;
+            FinishedCountLabel.Location = new Point(x, y);
+            FinishedCountLabel.Text = String.Format("Finished 0 out {0} tests.", Processes.Count);
+            FinishedCountLabel.Location = new Point(x, y);
+            //preferredSize = FinishedCountLabel.GetPreferredSize(new Size(maxLineDx, 13));
+            //FinishedCountLabel.Size = preferredSize;
+            FinishedCountLabel.AutoSize = true;
+            this.Controls.Add(FinishedCountLabel);
+
+            SeeResultsLabel = new LinkLabel();
+            SeeResultsLabel.Visible = false;
+            SeeResultsLabel.Location = new Point(x, y);
+            SeeResultsLabel.Text = "See results";
+            preferredSize = SeeResultsLabel.GetPreferredSize(new Size(maxLineDx, 13));
+            SeeResultsLabel.Size = preferredSize;
+            SeeResultsLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabel_Clicked);
+            this.Controls.Add(SeeResultsLabel);
+        }
+
+        private void LinkLabel_Clicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("notepad.exe", ResultsFileName);
         }
 
         private void runAllTests()
         {
+            RemoveProcessesInfo();
+            ResultsFileName = Path.GetTempFileName();
             Processes = new List<ProcessStatus>();
             Processes.Add(new ProcessStatus("tracert", "208.67.222.222"));
             Processes.Add(new ProcessStatus("tracert", "208.67.220.220"));
