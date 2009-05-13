@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Windows.Forms;
 using ProgressControls;
@@ -55,28 +56,13 @@ namespace OpenDnsDiagnostic
                 {
                     foreach (var test in Tests)
                     {
-                        sw.WriteLine("Results for: " + test.DisplayName);
-                        ProcessStatus ps = test as ProcessStatus;
-                        if (ps != null)
-                        {
-                            if (ps.StdOut != null && ps.StdOut.Length > 0)
-                            {
-                                sw.WriteLine("stdout:");
-                                sw.WriteLine(ps.StdOut);
-                            }
-
-                            if (ps.StdErr != null && ps.StdErr.Length > 0)
-                            {
-                                sw.WriteLine("stderr:");
-                                sw.WriteLine(ps.StdErr);
-                            }
-                        }
+                        test.WriteResult(sw);
                     }
                 }
             }
         }
 
-        private void NotifyUiAllProcessesFinished()
+        private void NotifyUiAllTestsFinished()
         {
             try
             {
@@ -90,7 +76,7 @@ namespace OpenDnsDiagnostic
             UiEnable();
         }
 
-        private void NotifyUiProcessFinished()
+        private void NotifyUiTestFinished()
         {
             int finishedCount = 0;
             foreach (var test in Tests)
@@ -104,7 +90,7 @@ namespace OpenDnsDiagnostic
             //Size preferredSize = FinishedCountLabel.GetPreferredSize(new Size(maxLineDx, 13));
             //FinishedCountLabel.Size = preferredSize;
             if (finishedCount == Tests.Count)
-                NotifyUiAllProcessesFinished();
+                NotifyUiAllTestsFinished();
         }
 
         delegate void process_ExitedDelegate(object sender, System.EventArgs e);
@@ -132,7 +118,39 @@ namespace OpenDnsDiagnostic
                 ps.StdErr = proc.StandardError.ReadToEnd();
             }
 
-            NotifyUiProcessFinished();
+            NotifyUiTestFinished();
+        }
+        delegate void DnsTestFinishedDelegate(DnsResolveStatus rs);
+        public void DnsTestFinishedThreadSafe(DnsResolveStatus rs)
+        {
+            if (this.InvokeRequired)
+            {
+                var myDelegate = new DnsTestFinishedDelegate(DnsTestFinishedThreadSafe);
+                this.BeginInvoke(myDelegate, new object[] { rs });
+                return;
+            }
+            rs.Stop();
+            NotifyUiTestFinished();
+        }
+
+        private void DnsCallback(IAsyncResult result)
+        {
+            DnsResolveStatus rs = result.AsyncState as DnsResolveStatus;
+            try
+            {
+                IPAddress[] ips = Dns.EndGetHostAddresses(result);
+                rs.IPAddresses = ips;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.WriteLine(ex.ToString());
+            }
+            DnsTestFinishedThreadSafe(rs);
+        }
+
+        private void StartDnsResolve(DnsResolveStatus rs)
+        {
+            Dns.BeginGetHostAddresses(rs.Hostname, new AsyncCallback(DnsCallback), rs);
         }
 
         private void StartProcess(ProcessStatus ps)
@@ -224,6 +242,7 @@ namespace OpenDnsDiagnostic
             CleanupAfterPreviousTests();
             ResultsFileName = Path.GetTempFileName();
             Tests = new List<TestStatus>();
+            Tests.Add(new DnsResolveStatus("myip.opendns.com"));
             Tests.Add(new ProcessStatus("tracert", "208.67.222.222"));
             Tests.Add(new ProcessStatus("tracert", "208.67.220.220"));
             Tests.Add(new ProcessStatus("nslookup", "myip.opendns.com"));
@@ -235,6 +254,9 @@ namespace OpenDnsDiagnostic
                 ProcessStatus ps = test as ProcessStatus;
                 if (ps != null)
                     StartProcess(ps);
+                DnsResolveStatus rs = test as DnsResolveStatus;
+                if (rs != null)
+                    StartDnsResolve(rs);
             }
             UiDisable();
         }

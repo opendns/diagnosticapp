@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Net;
 using System.Windows.Forms;
 using ProgressControls;
 
@@ -41,6 +44,15 @@ namespace OpenDnsDiagnostic
             Label.Text = "Finished: " + Label.Text;
             Label.ForeColor = System.Drawing.Color.Gray;
         }
+
+        public void WriteSeparatorLine(StreamWriter sw)
+        {
+            sw.WriteLine("---------------------------------------------");
+        }
+
+        public virtual void WriteResult(StreamWriter sw)
+        {
+        }
     }
 
     public class ProcessStatus : TestStatus
@@ -81,6 +93,65 @@ namespace OpenDnsDiagnostic
             p.StartInfo.FileName = Exe;
             p.StartInfo.Arguments = Args;
             Process = p;
+        }
+
+        public override void WriteResult(StreamWriter sw)
+        {
+            WriteSeparatorLine(sw);
+            sw.WriteLine("Results for: " + DisplayName);
+            if (StdOut != null && StdOut.Length > 0)
+            {
+                sw.WriteLine("stdout:");
+                sw.WriteLine(StdOut);
+            }
+
+            if (StdErr != null && StdErr.Length > 0)
+            {
+                sw.WriteLine("stderr:");
+                sw.WriteLine(StdErr);
+            }
+        }
+    }
+
+    public class DnsResolveStatus : TestStatus
+    {
+        public string Hostname;
+        public IPAddress[] IPAddresses;
+        public DnsResolveStatus(string hostname)
+            : base()
+        {
+            Hostname = hostname;
+        }
+
+        public override string DisplayName
+        {
+            get
+            {
+                if (null != _displayName)
+                    return _displayName;
+                return "DNS lookup of " + Hostname;
+            }
+            set
+            {
+                base.DisplayName = value;
+            }
+        }
+
+        public override void WriteResult(StreamWriter sw)
+        {
+            WriteSeparatorLine(sw);
+            sw.WriteLine("Results of DNS lookup of: " + Hostname);
+            if (null == IPAddresses)
+            {
+                sw.WriteLine();
+                return;
+            }
+            foreach (var ip in IPAddresses)
+            {
+                var s = "  " + ip.ToString();
+                sw.WriteLine(s);
+            }
+            sw.WriteLine();
         }
     }
 }
