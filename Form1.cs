@@ -14,7 +14,7 @@ namespace OpenDnsDiagnostic
     public partial class Form1 : Form
     {
         public static string APP_VER = "0.1";
-        List<ProcessStatus> Processes;
+        List<TestStatus> Tests;
         LinkLabel SeeResultsLabel;
         Label FinishedCountLabel;
         string ResultsFileName;
@@ -30,18 +30,18 @@ namespace OpenDnsDiagnostic
             this.Close();
         }
 
-        private void RemoveProcessesInfo()
+        private void CleanupAfterPreviousTests()
         {
             this.Controls.Remove(FinishedCountLabel);
             this.Controls.Remove(SeeResultsLabel);
-            if (null == Processes)
+            if (null == Tests)
                 return;
-            foreach (var ps in Processes)
+            foreach (var test in Tests)
             {
-                var l = ps.Label;
+                var l = test.Label;
                 if (l != null)
                     this.Controls.Remove(l);
-                var pi = ps.ProgressIndicator;
+                var pi = test.ProgressIndicator;
                 if (pi != null)
                     this.Controls.Remove(pi);
             }
@@ -53,19 +53,23 @@ namespace OpenDnsDiagnostic
             {
                 using (StreamWriter sw = new StreamWriter(fs, Encoding.UTF8))
                 {
-                    foreach (var ps in Processes)
+                    foreach (var test in Tests)
                     {
-                        sw.WriteLine("Results for: " + ps.DisplayName);
-                        if (ps.StdOut != null && ps.StdOut.Length > 0)
+                        sw.WriteLine("Results for: " + test.DisplayName);
+                        ProcessStatus ps = test as ProcessStatus;
+                        if (ps != null)
                         {
-                            sw.WriteLine("stdout:");
-                            sw.WriteLine(ps.StdOut);
-                        }
+                            if (ps.StdOut != null && ps.StdOut.Length > 0)
+                            {
+                                sw.WriteLine("stdout:");
+                                sw.WriteLine(ps.StdOut);
+                            }
 
-                        if (ps.StdErr != null && ps.StdErr.Length > 0)
-                        {
-                            sw.WriteLine("stderr:");
-                            sw.WriteLine(ps.StdErr);
+                            if (ps.StdErr != null && ps.StdErr.Length > 0)
+                            {
+                                sw.WriteLine("stderr:");
+                                sw.WriteLine(ps.StdErr);
+                            }
                         }
                     }
                 }
@@ -89,22 +93,22 @@ namespace OpenDnsDiagnostic
         private void NotifyUiProcessFinished()
         {
             int finishedCount = 0;
-            foreach (var ps in Processes)
+            foreach (var test in Tests)
             {
-                if (ps.Finished)
+                if (test.Finished)
                     finishedCount += 1;
             }
 
             //int maxLineDx = this.Size.Width;
-            FinishedCountLabel.Text = String.Format("Finished {0} out of {1} tests.", finishedCount, Processes.Count);
+            FinishedCountLabel.Text = String.Format("Finished {0} out of {1} tests.", finishedCount, Tests.Count);
             //Size preferredSize = FinishedCountLabel.GetPreferredSize(new Size(maxLineDx, 13));
             //FinishedCountLabel.Size = preferredSize;
-            if (finishedCount == Processes.Count)
+            if (finishedCount == Tests.Count)
                 NotifyUiAllProcessesFinished();
         }
 
         delegate void process_ExitedDelegate(object sender, System.EventArgs e);
-        private void process_Exited(object sender, System.EventArgs e)
+        public void process_Exited(object sender, System.EventArgs e)
         {
             if (this.InvokeRequired)
             {
@@ -115,18 +119,17 @@ namespace OpenDnsDiagnostic
 
             var proc = sender as Process;
             Debug.Assert(proc != null);
-            foreach (var ps in Processes)
+            foreach (var test in Tests)
             {
+                ProcessStatus ps = test as ProcessStatus;
+                if (null == ps)
+                    continue;
                 if (proc != ps.Process)
                     continue;
+                test.Stop();
 
                 ps.StdOut = proc.StandardOutput.ReadToEnd();
                 ps.StdErr = proc.StandardError.ReadToEnd();
-                ps.Finished = true;
-                ps.ProgressIndicator.Stop();
-                ps.ProgressIndicator.Visible = false;
-                ps.Label.Text = "Finished: " + ps.Label.Text;
-                ps.Label.ForeColor= System.Drawing.Color.Gray;
             }
 
             NotifyUiProcessFinished();
@@ -134,19 +137,12 @@ namespace OpenDnsDiagnostic
 
         private void StartProcess(ProcessStatus ps)
         {
-            var p = new Process();
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.RedirectStandardError = true;
-            p.EnableRaisingEvents = true;
+            Process p = ps.Process;
             p.Exited += new EventHandler(process_Exited);
-            p.StartInfo.CreateNoWindow = true;
-            p.StartInfo.FileName = ps.Exe;
-            p.StartInfo.Arguments = ps.Args;
-            ps.Process = p;
             try
             {
                 p.Start();
+                ps.ProgressIndicator.Start();
             }
             catch (Win32Exception)
             {
@@ -174,17 +170,17 @@ namespace OpenDnsDiagnostic
             int y = this.textBox1.Location.Y + 30;
             Size preferredSize;
             int maxLineDx = this.Size.Width - 2 * x;
-            foreach (var ps in Processes)
+            foreach (var test in Tests)
             {
                 var l = new Label();
                 l.ForeColor = System.Drawing.Color.Black;
                 l.AutoSize = true;
                 l.Location = new System.Drawing.Point(x, y);
-                l.Text = ps.DisplayName;
+                l.Text = test.DisplayName;
                 preferredSize = l.GetPreferredSize(new Size(maxLineDx, 13));
                 l.Size = preferredSize;
                 l.Show();
-                ps.Label = l;
+                test.Label = l;
                 this.Controls.Add(l);
                 int dy = preferredSize.Height;
                 int dx = preferredSize.Width;
@@ -192,7 +188,7 @@ namespace OpenDnsDiagnostic
                 var pi = new ProgressIndicator();
                 pi.Location = new Point(x + dx + 4, y-3);
                 pi.Size = new Size(progressDx, dy);
-                ps.ProgressIndicator = pi;
+                test.ProgressIndicator = pi;
                 this.Controls.Add(pi);
                 pi.Start();
 
@@ -201,7 +197,7 @@ namespace OpenDnsDiagnostic
             FinishedCountLabel = new Label();
             FinishedCountLabel.Visible = true;
             FinishedCountLabel.Location = new Point(x, y);
-            FinishedCountLabel.Text = String.Format("Finished 0 out {0} tests.", Processes.Count);
+            FinishedCountLabel.Text = String.Format("Finished 0 out {0} tests.", Tests.Count);
             FinishedCountLabel.Location = new Point(x, y);
             //preferredSize = FinishedCountLabel.GetPreferredSize(new Size(maxLineDx, 13));
             //FinishedCountLabel.Size = preferredSize;
@@ -225,19 +221,21 @@ namespace OpenDnsDiagnostic
 
         private void runAllTests()
         {
-            RemoveProcessesInfo();
+            CleanupAfterPreviousTests();
             ResultsFileName = Path.GetTempFileName();
-            Processes = new List<ProcessStatus>();
-            Processes.Add(new ProcessStatus("tracert", "208.67.222.222"));
-            Processes.Add(new ProcessStatus("tracert", "208.67.220.220"));
-            Processes.Add(new ProcessStatus("nslookup", "myip.opendns.com"));
-            Processes.Add(new ProcessStatus("nslookup", "-type=txt which.opendns.com. 208.67.222.222"));
-            Processes.Add(new ProcessStatus("ipconfig", "/all"));
-            foreach (var ps in Processes)
-            {
-                StartProcess(ps);
-            }
+            Tests = new List<TestStatus>();
+            Tests.Add(new ProcessStatus("tracert", "208.67.222.222"));
+            Tests.Add(new ProcessStatus("tracert", "208.67.220.220"));
+            Tests.Add(new ProcessStatus("nslookup", "myip.opendns.com"));
+            Tests.Add(new ProcessStatus("nslookup", "-type=txt which.opendns.com. 208.67.222.222"));
+            Tests.Add(new ProcessStatus("ipconfig", "/all"));
             LayoutProcessesInfo();
+            foreach (var test in Tests)
+            {
+                ProcessStatus ps = test as ProcessStatus;
+                if (ps != null)
+                    StartProcess(ps);
+            }
             UiDisable();
         }
 

@@ -5,10 +5,47 @@ using ProgressControls;
 
 namespace OpenDnsDiagnostic
 {
-    class ProcessStatus
+    public class TestStatus
     {
-        private string _displayName;
-        public string DisplayName
+        public string _displayName;
+        public virtual string DisplayName
+        {
+            get
+            {
+                return _displayName;
+            }
+            set
+            {
+                _displayName = value;
+            }
+        }
+        public bool Finished;
+        public bool FailedToStart;
+        public Label Label;
+        public ProgressIndicator ProgressIndicator;
+
+        public TestStatus()
+        {
+            _displayName = null;
+            FailedToStart = false;
+            Finished = false;
+            Label = null;
+            ProgressIndicator = null;
+        }
+
+        public void Stop()
+        {
+            Finished = true;
+            ProgressIndicator.Stop();
+            ProgressIndicator.Visible = false;
+            Label.Text = "Finished: " + Label.Text;
+            Label.ForeColor = System.Drawing.Color.Gray;
+        }
+    }
+
+    public class ProcessStatus : TestStatus
+    {
+        public override string DisplayName
         {
             get
             {
@@ -25,27 +62,25 @@ namespace OpenDnsDiagnostic
         }
         public string Exe;
         public string Args;
-        public bool Finished;
-        public bool FailedToStart;
         public Process Process;
         public string StdOut;
         public string StdErr;
-        public Label Label;
-        public ProgressIndicator ProgressIndicator;
 
         public ProcessStatus(string exe, string args)
+            : base()
         {
             Exe = exe;
             Debug.Assert(null != exe);
             Args = args;
-            FailedToStart = false;
-            Finished = false;
-            _displayName = null;
-            StdErr = null;
-            StdOut = null;
-            Process = null;
-            Label = null;
-            ProgressIndicator = null;
+            var p = new Process();
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.RedirectStandardError = true;
+            p.EnableRaisingEvents = true;
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.FileName = Exe;
+            p.StartInfo.Arguments = Args;
+            Process = p;
         }
     }
 }
