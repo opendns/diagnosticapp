@@ -24,11 +24,20 @@ namespace OpenDnsDiagnostic
         {
             InitializeComponent();
             this.Text = "OpenDNS Diagnostic v" + APP_VER;
+            this.textBox1.KeyDown += new KeyEventHandler(textBox_OnKeyDownHandler);
         }
 
         private void buttonExit_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void textBox_OnKeyDownHandler(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Return)
+            {
+                buttonRunTests_Click(null, null);
+            }
         }
 
         private void CleanupAfterPreviousTests()
@@ -50,6 +59,7 @@ namespace OpenDnsDiagnostic
 
         private void SaveResultsToTempFile()
         {
+            ResultsFileName = Path.GetTempFileName();
             using (FileStream fs = File.OpenWrite(ResultsFileName))
             {
                 using (StreamWriter sw = new StreamWriter(fs, Encoding.UTF8))
@@ -240,9 +250,12 @@ namespace OpenDnsDiagnostic
         private void runAllTests()
         {
             CleanupAfterPreviousTests();
-            ResultsFileName = Path.GetTempFileName();
+            string hostname = textBox1.Text;
             Tests = new List<TestStatus>();
             Tests.Add(new DnsResolveStatus("myip.opendns.com"));
+            if (hostname.Contains(".")) // a weak test for a valid hostname
+                Tests.Add(new ProcessStatus("tracert", hostname));
+
             Tests.Add(new ProcessStatus("tracert", "208.67.222.222"));
             Tests.Add(new ProcessStatus("tracert", "208.67.220.220"));
             Tests.Add(new ProcessStatus("nslookup", "myip.opendns.com"));
