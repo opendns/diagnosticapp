@@ -14,7 +14,7 @@ namespace OpenDnsDiagnostic
 {
     public partial class Form1 : Form
     {
-        public static string APP_VER = "0.1";
+        public static string APP_VER = "0.2";
         List<TestStatus> Tests;
         LinkLabel SeeResultsLabel;
         Label FinishedCountLabel;
@@ -122,10 +122,7 @@ namespace OpenDnsDiagnostic
                     continue;
                 if (proc != ps.Process)
                     continue;
-                test.Stop();
-
-                ps.StdOut = proc.StandardOutput.ReadToEnd();
-                ps.StdErr = proc.StandardError.ReadToEnd();
+                ps.Stop();
             }
 
             NotifyUiTestFinished();
@@ -169,7 +166,7 @@ namespace OpenDnsDiagnostic
             p.Exited += new EventHandler(process_Exited);
             try
             {
-                p.Start();
+                ps.Start();
                 ps.ProgressIndicator.Start();
             }
             catch (Win32Exception)
@@ -261,6 +258,7 @@ namespace OpenDnsDiagnostic
             Tests.Add(new ProcessStatus("nslookup", "myip.opendns.com"));
             Tests.Add(new ProcessStatus("nslookup", "-type=txt which.opendns.com. 208.67.222.222"));
             Tests.Add(new ProcessStatus("ipconfig", "/all"));
+            Tests.Add(new ProcessStatus("systeminfo", null, true));
             LayoutProcessesInfo();
             foreach (var test in Tests)
             {

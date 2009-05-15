@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Text;
 using System.Windows.Forms;
 using ProgressControls;
 
@@ -36,7 +37,7 @@ namespace OpenDnsDiagnostic
             ProgressIndicator = null;
         }
 
-        public void Stop()
+        public virtual void Stop()
         {
             Finished = true;
             ProgressIndicator.Stop();
@@ -77,35 +78,89 @@ namespace OpenDnsDiagnostic
         public Process Process;
         public string StdOut;
         public string StdErr;
+        public bool AddNewlinesAfterEmptyLine;
 
-        public ProcessStatus(string exe, string args)
-            : base()
+        void Init(string exe, string args, bool addNewlinesAfterEmptyLine)
         {
             Exe = exe;
             Debug.Assert(null != exe);
             Args = args;
+            StdOut = "";
+            StdErr = "";
+
             var p = new Process();
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.RedirectStandardOutput = true;
             p.StartInfo.RedirectStandardError = true;
             p.EnableRaisingEvents = true;
+            p.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);
+            p.ErrorDataReceived += new DataReceivedEventHandler(p_ErrorDataReceived);
             p.StartInfo.CreateNoWindow = true;
             p.StartInfo.FileName = Exe;
             p.StartInfo.Arguments = Args;
+            AddNewlinesAfterEmptyLine = addNewlinesAfterEmptyLine;
             Process = p;
+        }
+
+        public ProcessStatus(string exe, string args, bool addNewlinesAfterEmptyLine)
+            : base()
+        {
+            Init(exe, args, addNewlinesAfterEmptyLine);
+        }
+
+        public ProcessStatus(string exe, string args)
+            : base()
+        {
+            Init(exe, args, false);
+        }
+
+        private void p_OutputDataReceived(object sender, DataReceivedEventArgs data)
+        {
+            string s = data.Data;
+            if (!String.IsNullOrEmpty(s))
+            {
+                StdOut += s;
+                StdOut += Environment.NewLine;
+            } 
+            else 
+            {
+                if (AddNewlinesAfterEmptyLine)
+                    StdOut += Environment.NewLine;
+            }                
+        }
+
+        private void p_ErrorDataReceived(object sender, DataReceivedEventArgs data)
+        {
+            string s = data.Data;
+            if (!String.IsNullOrEmpty(s))
+            {
+                StdErr += s;
+                StdErr += Environment.NewLine;
+            }
+            else
+            {
+                if (AddNewlinesAfterEmptyLine)
+                    StdErr += Environment.NewLine;
+            }
+        }
+
+        public virtual void Start()
+        {
+            Process.Start();
+            Process.BeginOutputReadLine();
         }
 
         public override void WriteResult(StreamWriter sw)
         {
             WriteSeparatorLine(sw);
             sw.WriteLine("Results for: " + DisplayName);
-            if (StdOut != null && StdOut.Length > 0)
+            if (!String.IsNullOrEmpty(StdOut))
             {
                 sw.WriteLine("stdout:");
                 sw.WriteLine(StdOut);
             }
 
-            if (StdErr != null && StdErr.Length > 0)
+            if (!String.IsNullOrEmpty(StdErr))
             {
                 sw.WriteLine("stderr:");
                 sw.WriteLine(StdErr);
