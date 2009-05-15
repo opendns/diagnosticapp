@@ -195,7 +195,7 @@ namespace OpenDnsDiagnostic
         public override void WriteResult(StreamWriter sw)
         {
             WriteSeparatorLine(sw);
-            sw.WriteLine("Results of DNS lookup of: " + Hostname);
+            sw.WriteLine("Results for: DNS lookup of " + Hostname);
             if (null == IPAddresses)
             {
                 sw.WriteLine();
