@@ -14,11 +14,14 @@ namespace OpenDnsDiagnostic
 {
     public partial class Form1 : Form
     {
+        //public static string REPORT_SUBMIT_URL = "http://127.0.0.1/diagnosticsubmit";
+        public static string REPORT_SUBMIT_URL = "http://opendnsupdate.appspot.com/diagnosticsubmit";
         public static string APP_VER = "0.2";
         List<TestStatus> Tests;
         LinkLabel SeeResultsLabel;
         Label FinishedCountLabel;
         string ResultsFileName;
+        string ResultsUrl;
 
         public Form1()
         {
@@ -72,6 +75,20 @@ namespace OpenDnsDiagnostic
             }
         }
 
+        private void SubmitDiagnosticReport()
+        {
+            try
+            {
+                var wc = new WebClient();
+                byte[] response = wc.UploadFile(REPORT_SUBMIT_URL, ResultsFileName);
+                string resp = Encoding.UTF8.GetString(response, 0, response.Length);
+                ResultsUrl = resp;
+            }
+            catch
+            {
+            }
+        }
+
         private void NotifyUiAllTestsFinished()
         {
             try
@@ -84,6 +101,7 @@ namespace OpenDnsDiagnostic
             SeeResultsLabel.Visible = true;
             FinishedCountLabel.Visible = false;
             UiEnable();
+            SubmitDiagnosticReport();
         }
 
         private void NotifyUiTestFinished()
@@ -127,6 +145,7 @@ namespace OpenDnsDiagnostic
 
             NotifyUiTestFinished();
         }
+
         delegate void DnsTestFinishedDelegate(DnsResolveStatus rs);
         public void DnsTestFinishedThreadSafe(DnsResolveStatus rs)
         {
@@ -241,10 +260,23 @@ namespace OpenDnsDiagnostic
 
         private void LinkLabel_Clicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start("notepad.exe", ResultsFileName);
+            if (null != ResultsUrl)
+                System.Diagnostics.Process.Start(ResultsUrl);
+            else
+                System.Diagnostics.Process.Start("notepad.exe", ResultsFileName);
         }
 
-        private void runAllTests()
+        private void StartTest(TestStatus test)
+        {
+            ProcessStatus ps = test as ProcessStatus;
+            if (ps != null)
+                StartProcess(ps);
+            DnsResolveStatus rs = test as DnsResolveStatus;
+            if (rs != null)
+                StartDnsResolve(rs);
+        }
+
+        private void RunAllTests()
         {
             CleanupAfterPreviousTests();
             string hostname = textBox1.Text;
@@ -261,25 +293,14 @@ namespace OpenDnsDiagnostic
             Tests.Add(new ProcessStatus("systeminfo", null, true));
             LayoutProcessesInfo();
             foreach (var test in Tests)
-            {
-                ProcessStatus ps = test as ProcessStatus;
-                if (ps != null)
-                    StartProcess(ps);
-                DnsResolveStatus rs = test as DnsResolveStatus;
-                if (rs != null)
-                    StartDnsResolve(rs);
-            }
+                StartTest(test);
+
             UiDisable();
         }
 
         private void buttonRunTests_Click(object sender, EventArgs e)
         {
-            runAllTests();
-        }
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
+            RunAllTests();
         }
     }
 }
