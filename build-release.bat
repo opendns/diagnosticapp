@@ -12,6 +12,10 @@ devenv OpenDnsDiagnostic.sln /Project OpenDnsDiagnostic.csproj /ProjectConfig Re
 echo Compilation ok!
 
 copy bin\Release\OpenDnsDiagnostic.exe OpenDNSDiagnostic-%VERSION%.exe
+
+signtool sign /f opendns-sign.pfx /p bulba /d "OpenDNS Diagnostic" /du "http://www.opendns.com/support/" /t http://timestamp.comodoca.com/authenticode OpenDNSDiagnostic-%VERSION%.exe
+@IF ERRORLEVEL 1 goto SIGN_FAILED
+
 goto END
 
 :NO_VC9
@@ -25,6 +29,10 @@ goto END
 :VERSION_NEEDED
 @echo Need to provide version number e.g.:
 @echo build-release.bat 1.0
+@goto END
+
+:SIGN_FAILED
+@echo Failed to sign the installer
 @goto END
 
 :BAD_VERSION
