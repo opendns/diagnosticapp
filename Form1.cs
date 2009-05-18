@@ -83,6 +83,11 @@ namespace OpenDnsDiagnostic
                 byte[] response = wc.UploadFile(REPORT_SUBMIT_URL, ResultsFileName);
                 string resp = Encoding.UTF8.GetString(response, 0, response.Length);
                 ResultsUrl = resp;
+                int x = this.label1.Location.X;
+                int maxLineDx = this.Size.Width - 2 * x;
+                SeeResultsLabel.Text = "See results at " + ResultsUrl;
+                Size preferredSize = SeeResultsLabel.GetPreferredSize(new Size(maxLineDx, 13));
+                SeeResultsLabel.Size = preferredSize;
             }
             catch
             {
@@ -256,7 +261,7 @@ namespace OpenDnsDiagnostic
             preferredSize = SeeResultsLabel.GetPreferredSize(new Size(maxLineDx, 13));
             SeeResultsLabel.Size = preferredSize;
             SeeResultsLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabel_Clicked);
-            y += (preferredSize.Height + buttonExit.Size.Height + 16);
+            y += (preferredSize.Height + buttonExit.Size.Height + 30);
             this.Controls.Add(SeeResultsLabel);
             if (ClientSize.Height < y)
                 ClientSize = new Size(this.ClientSize.Width, y);
