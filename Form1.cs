@@ -16,7 +16,7 @@ namespace OpenDnsDiagnostic
     {
         //public static string REPORT_SUBMIT_URL = "http://127.0.0.1/diagnosticsubmit";
         public static string REPORT_SUBMIT_URL = "http://opendnsupdate.appspot.com/diagnosticsubmit";
-        public static string APP_VER = "0.2";
+        public static string APP_VER = "0.3";
         List<TestStatus> Tests;
         LinkLabel SeeResultsLabel;
         Label FinishedCountLabel;
