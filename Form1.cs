@@ -289,8 +289,15 @@ namespace OpenDnsDiagnostic
             Tests.Add(new ProcessStatus("tracert", "208.67.220.220"));
             Tests.Add(new ProcessStatus("nslookup", "myip.opendns.com"));
             Tests.Add(new ProcessStatus("nslookup", "-type=txt which.opendns.com. 208.67.222.222"));
+            Tests.Add(new ProcessStatus("nslookup", "-type=txt -port=5353 which.opendns.com. 208.67.222.222"));
+            Tests.Add(new ProcessStatus("nslookup", "-class=chaos -type=txt hostname.bind. 4.2.2.1"));
+            Tests.Add(new ProcessStatus("nslookup", "-class=chaos -type=txt hostname.bind. 192.33.4.12"));
+            Tests.Add(new ProcessStatus("nslookup", "-class=chaos -type=txt hostname.bind. 204.61.216.4"));
+            Tests.Add(new ProcessStatus("nslookup", "whoami.ultradns.net udns1.ultradns.net"));
+            Tests.Add(new ProcessStatus("nslookup", "-debug debug.opendns.com"));
             Tests.Add(new ProcessStatus("ipconfig", "/all"));
             Tests.Add(new ProcessStatus("systeminfo", null, true));
+            Tests.Add(new ProcessStatus("tasklist", null));
             LayoutProcessesInfo();
             foreach (var test in Tests)
                 StartTest(test);
