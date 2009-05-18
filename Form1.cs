@@ -209,6 +209,7 @@ namespace OpenDnsDiagnostic
 
         private void LayoutProcessesInfo()
         {
+            this.SuspendLayout();
             int x = this.label1.Location.X;
             const int progressDx = 20;
             int y = this.textBox1.Location.Y + 30;
@@ -255,7 +256,12 @@ namespace OpenDnsDiagnostic
             preferredSize = SeeResultsLabel.GetPreferredSize(new Size(maxLineDx, 13));
             SeeResultsLabel.Size = preferredSize;
             SeeResultsLabel.LinkClicked += new LinkLabelLinkClickedEventHandler(LinkLabel_Clicked);
+            y += (preferredSize.Height + buttonExit.Size.Height + 16);
             this.Controls.Add(SeeResultsLabel);
+            if (ClientSize.Height < y)
+                ClientSize = new Size(this.ClientSize.Width, y);
+            this.ResumeLayout();
+            this.PerformLayout();
         }
 
         private void LinkLabel_Clicked(object sender, LinkLabelLinkClickedEventArgs e)
