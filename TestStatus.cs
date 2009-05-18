@@ -72,7 +72,9 @@ namespace OpenDnsDiagnostic
                     return _displayName;
                 if (null == Args)
                     return Exe;
-                return Exe + " " + Args;
+                if (null == Comment)
+                    return Exe + " " + Args;
+                return Exe + " " + Args + " " + Comment;
             }
             set
             {
@@ -81,16 +83,18 @@ namespace OpenDnsDiagnostic
         }
         public string Exe;
         public string Args;
+        public string Comment;
         public Process Process;
         public string StdOut;
         public string StdErr;
         public bool AddNewlinesAfterEmptyLine;
 
-        void Init(string exe, string args, bool addNewlinesAfterEmptyLine)
+        void Init(string exe, string args, string comment, bool addNewlinesAfterEmptyLine)
         {
             Exe = exe;
             Debug.Assert(null != exe);
             Args = args;
+            Comment = comment;
             StdOut = "";
             StdErr = "";
 
@@ -111,13 +115,19 @@ namespace OpenDnsDiagnostic
         public ProcessStatus(string exe, string args, bool addNewlinesAfterEmptyLine)
             : base()
         {
-            Init(exe, args, addNewlinesAfterEmptyLine);
+            Init(exe, args, null, addNewlinesAfterEmptyLine);
         }
 
         public ProcessStatus(string exe, string args)
             : base()
         {
-            Init(exe, args, false);
+            Init(exe, args, null, false);
+        }
+
+        public ProcessStatus(string exe, string args, string comment)
+            : base()
+        {
+            Init(exe, args, comment, false);
         }
 
         private void p_OutputDataReceived(object sender, DataReceivedEventArgs data)
