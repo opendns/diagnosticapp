@@ -27,7 +27,8 @@ namespace OpenDnsDiagnostic
         {
             InitializeComponent();
             this.Text = "OpenDNS Diagnostic v" + APP_VER;
-            this.textBox1.KeyDown += new KeyEventHandler(textBox_OnKeyDownHandler);
+            this.textBoxDomain.KeyDown += new KeyEventHandler(textBox_OnKeyDownHandler);
+            this.textBoxUserName.KeyDown += new KeyEventHandler(textBox_OnKeyDownHandler);
         }
 
         private void buttonExit_Click(object sender, EventArgs e)
@@ -68,6 +69,12 @@ namespace OpenDnsDiagnostic
             {
                 using (StreamWriter sw = new StreamWriter(fs, Encoding.UTF8))
                 {
+                    var userName = textBoxUserName.Text;
+                    userName.Trim();
+                    if (!string.IsNullOrEmpty(userName))
+                    {
+                        sw.WriteLine("OpenDNS account: " + userName);
+                    }
                     foreach (var test in Tests)
                     {
                         test.WriteResult(sw);
@@ -84,7 +91,7 @@ namespace OpenDnsDiagnostic
                 byte[] response = wc.UploadFile(REPORT_SUBMIT_URL, ResultsFileName);
                 string resp = Encoding.UTF8.GetString(response, 0, response.Length);
                 ResultsUrl = resp;
-                int x = this.label1.Location.X;
+                int x = this.labelDomain.Location.X;
                 int maxLineDx = this.Size.Width - 2 * x;
                 SeeResultsLabel.Text = "See results at " + ResultsUrl;
                 Size preferredSize = SeeResultsLabel.GetPreferredSize(new Size(maxLineDx, 13));
@@ -250,21 +257,23 @@ namespace OpenDnsDiagnostic
         private void UiEnable()
         {
             this.buttonRunTests.Enabled = true;
-            this.textBox1.Enabled = true;
+            this.textBoxUserName.Enabled = true;
+            this.textBoxDomain.Enabled = true;
         }
 
         private void UiDisable()
         {
             this.buttonRunTests.Enabled = false;
-            this.textBox1.Enabled = false;
+            this.textBoxUserName.Enabled = false;
+            this.textBoxDomain.Enabled = false;
         }
 
         private void LayoutProcessesInfo()
         {
             this.SuspendLayout();
-            int x = this.label1.Location.X;
+            int x = this.labelUserName.Location.X;
             const int progressDx = 20;
-            int y = this.textBox1.Location.Y + 30;
+            int y =labelDomainExample.Location.Y + labelDomainExample.Size.Height + 6;
             Size preferredSize;
             int maxLineDx = this.Size.Width - 2 * x;
             foreach (var test in Tests)
@@ -327,7 +336,7 @@ namespace OpenDnsDiagnostic
         private void RunAllTests()
         {
             CleanupAfterPreviousTests();
-            string hostname = textBox1.Text;
+            string hostname = textBoxDomain.Text;
             Tests = new List<TestStatus>();
             Tests.Add(new DnsResolveStatus("myip.opendns.com"));
             if (hostname.Contains(".")) // a weak test for a valid hostname
