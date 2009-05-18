@@ -141,6 +141,20 @@ namespace OpenDnsDiagnostic
             Debug.Assert(proc != null);
             foreach (var test in Tests)
             {
+                MultiProcessStatus mps = test as MultiProcessStatus;
+                if (mps != null)
+                {
+                    foreach (var tmp in mps.Processes)
+                    {
+                        if (tmp.Process == proc)
+                        {
+                            tmp.Stop();
+                            if (mps.AllFinished())
+                                mps.Stop();
+                        }
+                    }
+                    continue;
+                }
                 ProcessStatus ps = test as ProcessStatus;
                 if (null == ps)
                     continue;
@@ -185,20 +199,52 @@ namespace OpenDnsDiagnostic
             Dns.BeginGetHostAddresses(rs.Hostname, new AsyncCallback(DnsCallback), rs);
         }
 
-        private void StartProcess(ProcessStatus ps)
+        private void StartProcess(ProcessStatus ps, bool visible)
         {
             Process p = ps.Process;
             p.Exited += new EventHandler(process_Exited);
+            if (visible)
+                ps.ProgressIndicator.Start();
             try
             {
                 ps.Start();
-                ps.ProgressIndicator.Start();
             }
             catch (Win32Exception)
             {
                 ps.FailedToStart = true;
                 ps.Finished = true;
             }
+        }
+
+        private void StartMultiPorcess(MultiProcessStatus mps)
+        {
+            foreach (var ps in mps.Processes)
+                StartProcess(ps, false);
+            mps.ProgressIndicator.Start();
+        }
+
+        private void StartTest(TestStatus test)
+        {
+            ProcessStatus ps = test as ProcessStatus;
+            if (ps != null)
+            {
+                StartProcess(ps, true);
+                return;
+            }
+            DnsResolveStatus rs = test as DnsResolveStatus;
+            if (rs != null)
+            {
+                StartDnsResolve(rs);
+                return;
+            }
+            MultiProcessStatus mps = test as MultiProcessStatus;
+            if (mps != null)
+            {
+                StartMultiPorcess(mps);
+                return;
+            }
+            Debug.Assert(false);
+
         }
 
         private void UiEnable()
@@ -278,16 +324,6 @@ namespace OpenDnsDiagnostic
                 System.Diagnostics.Process.Start("notepad.exe", ResultsFileName);
         }
 
-        private void StartTest(TestStatus test)
-        {
-            ProcessStatus ps = test as ProcessStatus;
-            if (ps != null)
-                StartProcess(ps);
-            DnsResolveStatus rs = test as DnsResolveStatus;
-            if (rs != null)
-                StartDnsResolve(rs);
-        }
-
         private void RunAllTests()
         {
             CleanupAfterPreviousTests();
@@ -307,6 +343,20 @@ namespace OpenDnsDiagnostic
             Tests.Add(new ProcessStatus("nslookup", "-class=chaos -type=txt hostname.bind. 204.61.216.4"));
             Tests.Add(new ProcessStatus("nslookup", "whoami.ultradns.net udns1.ultradns.net"));
             Tests.Add(new ProcessStatus("nslookup", "-debug debug.opendns.com"));
+            var mps = new MultiProcessStatus("pings");
+            Tests.Add(mps);
+            mps.Processes.Add(new ProcessStatus("ping", "-n 5 208.67.219.99"));
+            mps.Processes.Add(new ProcessStatus("ping", "-n 5 208.67.219.1"));
+            mps.Processes.Add(new ProcessStatus("ping", "-n 5 208.67.216.1"));
+            mps.Processes.Add(new ProcessStatus("ping", "-n 5 208.69.36.1"));
+            mps.Processes.Add(new ProcessStatus("ping", "-n 5 208.67.217.1"));
+            mps.Processes.Add(new ProcessStatus("ping", "-n 5 208.69.32.1"));
+            mps.Processes.Add(new ProcessStatus("ping", "-n 5 208.69.34.1"));
+            mps.Processes.Add(new ProcessStatus("ping", "-n 5 209.244.5.114"));
+            mps.Processes.Add(new ProcessStatus("ping", "-n 5 209.244.7.33"));
+            mps.Processes.Add(new ProcessStatus("ping", "-n 5 192.153.156.3"));
+            mps.Processes.Add(new ProcessStatus("ping", "-n 5 207.252.96.3"));
+
             Tests.Add(new ProcessStatus("ipconfig", "/all"));
             Tests.Add(new ProcessStatus("systeminfo", null, true));
             Tests.Add(new ProcessStatus("tasklist", null));

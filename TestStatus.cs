@@ -40,10 +40,16 @@ namespace OpenDnsDiagnostic
         public virtual void Stop()
         {
             Finished = true;
-            ProgressIndicator.Stop();
-            ProgressIndicator.Visible = false;
-            Label.Text = "Finished: " + Label.Text;
-            Label.ForeColor = System.Drawing.Color.Gray;
+            if (ProgressIndicator != null)
+            {
+                ProgressIndicator.Stop();
+                ProgressIndicator.Visible = false;
+            }
+            if (Label != null)
+            {
+                Label.Text = "Finished: " + Label.Text;
+                Label.ForeColor = System.Drawing.Color.Gray;
+            }
         }
 
         public void WriteSeparatorLine(StreamWriter sw)
@@ -165,6 +171,32 @@ namespace OpenDnsDiagnostic
                 sw.WriteLine("stderr:");
                 sw.WriteLine(StdErr);
             }
+        }
+    }
+
+    public class MultiProcessStatus : TestStatus
+    {
+        public List<ProcessStatus> Processes = new List<ProcessStatus>();
+        public MultiProcessStatus(string displayName)
+            : base()
+        {
+            DisplayName = displayName;
+        }
+
+        public override void WriteResult(StreamWriter sw)
+        {
+            foreach (var ps in Processes)
+                ps.WriteResult(sw);
+        }
+
+        public bool AllFinished()
+        {
+            foreach (var ps in Processes)
+            {
+                if (!ps.Finished)
+                    return false;
+            }
+            return true;
         }
     }
 
