@@ -45,6 +45,7 @@ namespace OpenDnsDiagnostic
 
         private void CleanupAfterPreviousTests()
         {
+            ResultsUrl = null;
             this.Controls.Remove(FinishedCountLabel);
             this.Controls.Remove(SeeResultsLabel);
             if (null == Tests)
