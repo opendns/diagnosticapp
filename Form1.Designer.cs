@@ -117,6 +117,7 @@
             this.Controls.Add(this.labelDomain);
             this.Controls.Add(this.buttonRunTests);
             this.Controls.Add(this.buttonExit);
+            this.DoubleBuffered = true;
             this.Name = "Form1";
             this.Text = "OpenDNS diagnostic tool";
             this.ResumeLayout(false);
