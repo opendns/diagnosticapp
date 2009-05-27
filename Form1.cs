@@ -14,9 +14,9 @@ namespace OpenDnsDiagnostic
 {
     public partial class Form1 : Form
     {
+        public static string APP_VER = "1.0";
         //public static string REPORT_SUBMIT_URL = "http://127.0.0.1/diagnosticsubmit";
         public static string REPORT_SUBMIT_URL = "http://opendnsupdate.appspot.com/diagnosticsubmit";
-        public static string APP_VER = "0.3";
         List<TestStatus> Tests;
         LinkLabel SeeResultsLabel;
         Label FinishedCountLabel;
@@ -26,6 +26,7 @@ namespace OpenDnsDiagnostic
         public Form1()
         {
             InitializeComponent();
+            this.Icon = new Icon(GetType(), "Icon1.ico");
             this.Text = "OpenDNS Diagnostic v" + APP_VER;
             this.textBoxDomain.KeyDown += new KeyEventHandler(textBox_OnKeyDownHandler);
             this.textBoxUserName.KeyDown += new KeyEventHandler(textBox_OnKeyDownHandler);
