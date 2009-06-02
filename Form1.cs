@@ -142,7 +142,37 @@ namespace OpenDnsDiagnostic
 
         private string ImportUserNameFromOldClient()
         {
+            string path = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+            path = System.IO.Path.Combine(path, "OpenDNS Updater");
+            path = System.IO.Path.Combine(path, "settings.ini");
+            if (!File.Exists(path))
+                return null;
 
+            try
+            {
+                using (var sr = new StreamReader(path))
+                {
+                    while (true)
+                    {
+                        string l = sr.ReadLine();
+                        if (null == l)
+                            return null;
+                        if (l.StartsWith("username"))
+                        {
+                            var parts = l.Split(new char[] { '=' });
+                            if (parts.Length == 2)
+                            {
+                                string name = parts[1];
+                                name = name.Trim();
+                                return name;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
             return null;
         }
 
