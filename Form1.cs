@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text;
 using System.Windows.Forms;
+using LitJson;
 using ProgressControls;
 
 namespace OpenDnsDiagnostic
@@ -22,6 +22,7 @@ namespace OpenDnsDiagnostic
         Label FinishedCountLabel;
         string ResultsFileName;
         string ResultsUrl;
+        string AutoDetectedUserName;
 
         public Form1()
         {
@@ -31,6 +32,8 @@ namespace OpenDnsDiagnostic
             this.textBoxDomain.KeyDown += new KeyEventHandler(textBox_OnKeyDownHandler);
             this.textBoxTicket.KeyDown += new KeyEventHandler(textBox_OnKeyDownHandler);
             this.textBoxUserName.KeyDown += new KeyEventHandler(textBox_OnKeyDownHandler);
+            AutoDetectOpenDnsUserName();
+            FillAutoDetectedUserName();
         }
 
         private void buttonExit_Click(object sender, EventArgs e)
@@ -62,6 +65,7 @@ namespace OpenDnsDiagnostic
                 if (pi != null)
                     this.Controls.Remove(pi);
             }
+            FillAutoDetectedUserName();
         }
 
         private void SaveResultsToTempFile()
@@ -107,6 +111,58 @@ namespace OpenDnsDiagnostic
             }
             catch
             {
+            }
+        }
+
+        private string ImportUserNameFromNewClient()
+        {
+            string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            path = System.IO.Path.Combine(path, "OpenDNS Updater");
+            path = System.IO.Path.Combine(path, "settings.dat");
+            if (!File.Exists(path))
+                return null;
+
+            //string json = Encoding.UTF8.GetString(response, 0, response.Length);
+            try
+            {
+                using (var sr = new StreamReader(path))
+                {
+                    string jsonTxt = sr.ReadToEnd();
+                    JsonData json = JsonMapper.ToObject(jsonTxt);
+                    JsonData nameObject = json["user_name"];
+                    string name = nameObject.ToString();
+                    return name;
+                }
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private string ImportUserNameFromOldClient()
+        {
+
+            return null;
+        }
+
+        private void AutoDetectOpenDnsUserName()
+        {
+            AutoDetectedUserName = ImportUserNameFromNewClient();
+            if (AutoDetectedUserName == null)
+                AutoDetectedUserName = ImportUserNameFromOldClient();
+        }
+
+        private void FillAutoDetectedUserName()
+        {
+            if (AutoDetectedUserName != null)
+            {
+                this.textBoxUserName.Text = AutoDetectedUserName;
+                this.textBoxTicket.Select();
+            }
+            else
+            {
+                this.textBoxUserName.Focus();
             }
         }
 
