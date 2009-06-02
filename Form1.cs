@@ -14,7 +14,7 @@ namespace OpenDnsDiagnostic
 {
     public partial class Form1 : Form
     {
-        public static string APP_VER = "1.0.1";
+        public static string APP_VER = "1.0.2";
         //public static string REPORT_SUBMIT_URL = "http://127.0.0.1/diagnosticsubmit";
         public static string REPORT_SUBMIT_URL = "http://opendnsupdate.appspot.com/diagnosticsubmit";
         List<TestStatus> Tests;
@@ -29,6 +29,7 @@ namespace OpenDnsDiagnostic
             this.Icon = new Icon(GetType(), "Icon1.ico");
             this.Text = "OpenDNS Diagnostic v" + APP_VER;
             this.textBoxDomain.KeyDown += new KeyEventHandler(textBox_OnKeyDownHandler);
+            this.textBoxTicket.KeyDown += new KeyEventHandler(textBox_OnKeyDownHandler);
             this.textBoxUserName.KeyDown += new KeyEventHandler(textBox_OnKeyDownHandler);
         }
 
@@ -76,6 +77,12 @@ namespace OpenDnsDiagnostic
                     {
                         sw.WriteLine("OpenDNS account: " + userName);
                     }
+                    var ticket = textBoxTicket.Text;
+                    ticket.Trim();
+                    if (!string.IsNullOrEmpty(ticket))
+                    {
+                        sw.WriteLine("OpenDNS ticket: " + ticket);
+                    }
                     foreach (var test in Tests)
                     {
                         test.WriteResult(sw);
@@ -92,7 +99,7 @@ namespace OpenDnsDiagnostic
                 byte[] response = wc.UploadFile(REPORT_SUBMIT_URL, ResultsFileName);
                 string resp = Encoding.UTF8.GetString(response, 0, response.Length);
                 ResultsUrl = resp;
-                int x = this.labelDomain.Location.X;
+                int x = this.labelAccount.Location.X;
                 int maxLineDx = this.Size.Width - 2 * x;
                 SeeResultsLabel.Text = "See results at " + ResultsUrl;
                 Size preferredSize = SeeResultsLabel.GetPreferredSize(new Size(maxLineDx, 13));
@@ -127,10 +134,7 @@ namespace OpenDnsDiagnostic
                     finishedCount += 1;
             }
 
-            //int maxLineDx = this.Size.Width;
             FinishedCountLabel.Text = String.Format("Finished {0} out of {1} tests.", finishedCount, Tests.Count);
-            //Size preferredSize = FinishedCountLabel.GetPreferredSize(new Size(maxLineDx, 13));
-            //FinishedCountLabel.Size = preferredSize;
             if (finishedCount == Tests.Count)
                 NotifyUiAllTestsFinished();
         }
@@ -259,6 +263,7 @@ namespace OpenDnsDiagnostic
         {
             this.buttonRunTests.Enabled = true;
             this.textBoxUserName.Enabled = true;
+            this.textBoxTicket.Enabled = true;
             this.textBoxDomain.Enabled = true;
         }
 
@@ -266,12 +271,13 @@ namespace OpenDnsDiagnostic
         {
             this.buttonRunTests.Enabled = false;
             this.textBoxUserName.Enabled = false;
+            this.textBoxTicket.Enabled = false;
             this.textBoxDomain.Enabled = false;
         }
 
         private void LayoutProcessesInfo()
         {
-            int x = this.labelUserName.Location.X;
+            int x = this.labelAccount.Location.X;
             const int progressDx = 20;
             int y = labelDomainExample.Location.Y + labelDomainExample.Size.Height + 6;
             Size preferredSize;
