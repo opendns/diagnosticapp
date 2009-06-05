@@ -34,8 +34,12 @@
 					PBXFileDataSource_Target_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 265856065;
-			PBXWorkspaceStateSaveDate = 265856065;
+			PBXPerProjectTemplateStateSaveDate = 265920312;
+			PBXWorkspaceStateSaveDate = 265920312;
+		};
+		perUserProjectItems = {
+			7FBCCCEB0FD99F49007AE748 /* PBXTextBookmark */ = 7FBCCCEB0FD99F49007AE748 /* PBXTextBookmark */;
+			7FBCCCEC0FD99F49007AE748 /* PBXTextBookmark */ = 7FBCCCEC0FD99F49007AE748 /* PBXTextBookmark */;
 		};
 		sourceControlManager = 7FB2DA220FD89EC200A3CA61 /* Source Control */;
 		userBuildSettings = {
@@ -85,19 +89,37 @@
 		indexTemplatePath = "";
 	};
 	7FB2DA270FD8A12800A3CA61 /* AppDelegate.h */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.c.h;
+		name = AppDelegate.h;
+		path = /Users/kkowalczyk/src/opendns/diagnostic/mac/AppDelegate.h;
+		sourceTree = "<absolute>";
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {519, 253}}";
 			sepNavSelRange = "{0, 0}";
 			sepNavVisRange = "{0, 70}";
 		};
 	};
-	7FB2DA280FD8A12800A3CA61 /* AppDelegate.m */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {691, 430}}";
-			sepNavSelRange = "{24, 0}";
-			sepNavVisRange = "{0, 59}";
-			sepNavWindowFrame = "{{42, 194}, {750, 558}}";
-		};
+	7FBCCCEB0FD99F49007AE748 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 7FB2DA270FD8A12800A3CA61 /* AppDelegate.h */;
+		name = "AppDelegate.h: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 70;
+		vrLoc = 0;
+	};
+	7FBCCCEC0FD99F49007AE748 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 7FB2DA270FD8A12800A3CA61 /* AppDelegate.h */;
+		name = "AppDelegate.h: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 70;
+		vrLoc = 0;
 	};
 	8D1107260486CEB800E47090 /* diagnostic_mac */ = {
 		activeExec = 0;
