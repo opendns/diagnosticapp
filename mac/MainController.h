@@ -1,11 +1,15 @@
 #import <Cocoa/Cocoa.h>
 
 @interface MainController : NSObject {
-	IBOutlet NSTextField *openDnsAccount;
-	IBOutlet NSTextField *ticketNo;
-	IBOutlet NSTextField *domainToTest;	
+	NSMutableArray *processes;
+	IBOutlet NSTextField *textOpenDnsAccount;
+	IBOutlet NSTextField *textTicketNo;
+	IBOutlet NSTextField *textDomainToTest;	
 }
 
--(IBAction) runTests:(id)sender;
+- (IBAction) runTests:(id)sender;
+- (void) startTests;
+- (void) processFinished:(NSNotification*)aNotification;
+- (unsigned)finishedTasksCount;
 
 @end
