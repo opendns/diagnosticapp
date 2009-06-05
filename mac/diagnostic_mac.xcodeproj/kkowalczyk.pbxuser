@@ -1,0 +1,108 @@
+// !$*UTF8*$!
+{
+	29B97313FDCFA39411CA2CEA /* Project object */ = {
+		activeBuildConfigurationName = Debug;
+		activeExecutable = 7FB2DA0A0FD89EBA00A3CA61 /* diagnostic_mac */;
+		activeTarget = 8D1107260486CEB800E47090 /* diagnostic_mac */;
+		addToTargets = (
+			8D1107260486CEB800E47090 /* diagnostic_mac */,
+		);
+		codeSenseManager = 7FB2DA230FD89EC200A3CA61 /* Code sense */;
+		executables = (
+			7FB2DA0A0FD89EBA00A3CA61 /* diagnostic_mac */,
+		);
+		perUserDictionary = {
+			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					341,
+					20,
+					48,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 265856065;
+			PBXWorkspaceStateSaveDate = 265856065;
+		};
+		sourceControlManager = 7FB2DA220FD89EC200A3CA61 /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+	29B97316FDCFA39411CA2CEA /* main.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {691, 430}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 266}";
+			sepNavWindowFrame = "{{19, 215}, {750, 558}}";
+		};
+	};
+	7FB2DA0A0FD89EBA00A3CA61 /* diagnostic_mac */ = {
+		isa = PBXExecutable;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		autoAttachOnCrash = 1;
+		breakpointsEnabled = 0;
+		configStateDict = {
+		};
+		customDataFormattersEnabled = 1;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		dylibVariantSuffix = "";
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		libgmallocEnabled = 0;
+		name = diagnostic_mac;
+		sourceDirectories = (
+		);
+	};
+	7FB2DA220FD89EC200A3CA61 /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+		};
+	};
+	7FB2DA230FD89EC200A3CA61 /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	7FB2DA270FD8A12800A3CA61 /* AppDelegate.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {519, 253}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 70}";
+		};
+	};
+	7FB2DA280FD8A12800A3CA61 /* AppDelegate.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {691, 430}}";
+			sepNavSelRange = "{24, 0}";
+			sepNavVisRange = "{0, 59}";
+			sepNavWindowFrame = "{{42, 194}, {750, 558}}";
+		};
+	};
+	8D1107260486CEB800E47090 /* diagnostic_mac */ = {
+		activeExec = 0;
+		executables = (
+			7FB2DA0A0FD89EBA00A3CA61 /* diagnostic_mac */,
+		);
+	};
+}
