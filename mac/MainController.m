@@ -1,5 +1,10 @@
-#import "AppDelegate.h"
+#import "MainController.h"
 
-@implementation AppDelegate
+@implementation MainController
+
+-(IBAction) runTests:(id)sender
+{
+	NSLog(@"Hello");
+}
 
 @end
