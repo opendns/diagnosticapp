@@ -29,7 +29,7 @@
 		7FBCCD3D0FD9AB0A007AE748 /* Process.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Process.h; sourceTree = "<group>"; };
 		7FBCCD3E0FD9AB0A007AE748 /* Process.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Process.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8D1107320486CEB800E47090 /* diagnostic_mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = diagnostic_mac.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D1107320486CEB800E47090 /* OpenDNSDiagnostic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = OpenDNSDiagnostic.app; path = build/Debug/OpenDNSDiagnostic.app; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,7 +76,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D1107320486CEB800E47090 /* diagnostic_mac.app */,
+				8D1107320486CEB800E47090 /* OpenDNSDiagnostic.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -139,7 +139,7 @@
 			name = OpenDNSDiagnostic;
 			productInstallPath = "$(HOME)/Applications";
 			productName = diagnostic_mac;
-			productReference = 8D1107320486CEB800E47090 /* diagnostic_mac.app */;
+			productReference = 8D1107320486CEB800E47090 /* OpenDNSDiagnostic.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
