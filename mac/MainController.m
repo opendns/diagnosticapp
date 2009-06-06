@@ -68,7 +68,7 @@
 
 - (void) startPing:(NSString*)addr comment:(NSString*)aComment
 {
-	NSArray *args = [NSArray arrayWithObjects: @"-n", @"5", addr, nil];
+	NSArray *args = [NSArray arrayWithObjects: @"-c", @"5", addr, nil];
 	[self startTest:@"/sbin/ping" withArgs:args comment:aComment];
 }
 
@@ -131,7 +131,7 @@
 	[self startPing:@"192.153.156.3" comment:@"(att west coast)"];
 	[self startPing:@"207.252.96.3" comment:@"(att east coast)"];
 
-	args = [NSArray arrayWithObject: @"ax"];
+	args = [NSArray arrayWithObject: @"aux"];
 	[self startTest:@"/bin/ps" withArgs:args];
 
 	args = [NSArray arrayWithObject: @"-a"];
