@@ -2,8 +2,15 @@
 
 @implementation Process
 
-- (void)start:(NSString*)exePath withArgs:(NSArray*)args
+- (void)dealloc
 {
+	[comment release];
+	[super dealloc];
+}
+
+- (void)start:(NSString*)exePath withArgs:(NSArray*)args comment:(NSString*)aComment
+{
+	comment = [aComment retain];
 	task = [[NSTask alloc] init];
     [task setLaunchPath: exePath];
     [task setArguments: args];	
