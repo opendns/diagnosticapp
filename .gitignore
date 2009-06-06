@@ -2,3 +2,6 @@ bin/
 obj/
 *.suo
 *.exe
+mac/OpenDNSDiagnostic.xcodeproj/kkowalczyk.mode1v3
+mac/OpenDNSDiagnostic.xcodeproj/kkowalczyk.pbxuser
+mac/build/
