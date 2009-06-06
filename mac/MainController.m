@@ -13,6 +13,42 @@
 											   object:nil];
 }
 
+- (void) disableUI
+{
+	[buttonStartTests setEnabled:FALSE];
+	[textOpenDnsAccount setEnabled:FALSE];
+	[textTicketNo setEnabled:FALSE];
+	[textDomainToTest setEnabled:FALSE];
+}
+
+- (void) enableUI
+{
+	[buttonStartTests setEnabled:TRUE];
+	[textOpenDnsAccount setEnabled:TRUE];
+	[textTicketNo setEnabled:TRUE];
+	[textDomainToTest setEnabled:TRUE];
+}
+
+- (void) showProgress
+{
+	[textStatus setHidden:FALSE];
+	[progressIndicator setHidden:FALSE];
+}
+
+- (void) hideProgress
+{
+	[textStatus setHidden:TRUE];
+	[progressIndicator setHidden:TRUE];	
+}
+
+- (void) updateProgress
+{
+	unsigned count = [processes count];
+	unsigned finished = [self finishedTasksCount];
+	NSString *s = [NSString stringWithFormat:@"Please wait. Finished %d out of %d tests.", (int)finished, (int)count];
+	[textStatus setStringValue:s];
+}
+
 - (IBAction) runTests:(id)sender
 {
 	[self startTests];
@@ -27,9 +63,11 @@
 
 - (void) startTests
 {
+	[self disableUI];
 	[processes removeAllObjects];
 	NSArray *args = [NSArray arrayWithObjects: @"-type=txt", @"which.opendns.com.", @"208.67.222.222", nil];
 	[self startTest:@"/usr/bin/nslookup" withArgs:args];
+	[self showProgress];
 }
 
 - (Process*)findProcessByTask:(NSTask*)aTask
@@ -55,7 +93,7 @@
 	return finishedCount;
 }
 
-- (BOOL)allTasksFinished
+- (BOOL)didAllTestsFinished
 {
 	unsigned count = [processes count];
 	for (unsigned i = 0; i < count; i++) {
@@ -66,11 +104,20 @@
 	return TRUE;
 }
 
+- (void)handleAllTestsFinished
+{
+	[self enableUI];
+	[self hideProgress];
+}
+
 - (void)processFinished:(NSNotification *)aNotification
 {
 	NSTask *task = [aNotification object];
 	Process *process = [self findProcessByTask:task];
 	[process finish];
+	[self updateProgress];
+	if ([self didAllTestsFinished])
+		[self handleAllTestsFinished];		
 }
 
 @end

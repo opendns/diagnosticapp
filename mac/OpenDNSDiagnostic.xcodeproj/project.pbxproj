@@ -29,7 +29,7 @@
 		7FBCCD3D0FD9AB0A007AE748 /* Process.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Process.h; sourceTree = "<group>"; };
 		7FBCCD3E0FD9AB0A007AE748 /* Process.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Process.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8D1107320486CEB800E47090 /* OpenDNSDiagnostic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = OpenDNSDiagnostic.app; path = build/Debug/OpenDNSDiagnostic.app; sourceTree = "<group>"; };
+		8D1107320486CEB800E47090 /* diagnostic_mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = diagnostic_mac.app; path = /Users/kkowalczyk/src/opendns/diagnostic/mac/build/Debug/diagnostic_mac.app; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,7 +76,6 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D1107320486CEB800E47090 /* OpenDNSDiagnostic.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -139,7 +138,7 @@
 			name = OpenDNSDiagnostic;
 			productInstallPath = "$(HOME)/Applications";
 			productName = diagnostic_mac;
-			productReference = 8D1107320486CEB800E47090 /* OpenDNSDiagnostic.app */;
+			productReference = 8D1107320486CEB800E47090 /* diagnostic_mac.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -147,7 +146,7 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "diagnostic_mac" */;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "OpenDNSDiagnostic" */;
 			compatibilityVersion = "Xcode 3.1";
 			hasScannedForEncodings = 1;
 			mainGroup = 29B97314FDCFA39411CA2CEA /* diagnostic_mac */;
@@ -274,7 +273,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "diagnostic_mac" */ = {
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "OpenDNSDiagnostic" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,
