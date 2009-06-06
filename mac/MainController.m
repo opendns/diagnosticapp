@@ -33,11 +33,13 @@
 {
 	[textStatus setHidden:FALSE];
 	[progressIndicator setHidden:FALSE];
+	[progressIndicator startAnimation:nil];
 }
 
 - (void) hideProgress
 {
 	[textStatus setHidden:TRUE];
+	[progressIndicator stopAnimation:nil];
 	[progressIndicator setHidden:TRUE];	
 }
 
