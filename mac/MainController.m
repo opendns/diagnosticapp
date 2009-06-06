@@ -72,6 +72,12 @@
 	[self startTest:@"/sbin/ping" withArgs:args comment:aComment];
 }
 
+- (void) startTraceroute:(NSString*)addr
+{
+	NSArray *args = [NSArray arrayWithObject: addr];
+	[self startTest:@"/usr/sbin/traceroute" withArgs:args comment:nil];
+}
+
 - (void) startTests
 {
 	NSArray *args;
@@ -79,11 +85,15 @@
 	[self disableUI];
 	[processes removeAllObjects];
 
-	/*args = [NSArray arrayWithObjects: @"208.67.222.222", nil];
-	[self startTest:@"/usr/sbin/traceroute" withArgs:args];
+	//Tests.Add(new DnsResolveStatus("myip.opendns.com"));
 
-	args = [NSArray arrayWithObjects: @"208.67.220.220", nil];
-	[self startTest:@"/usr/sbin/traceroute" withArgs:args];*/
+	NSString *host = [textDomainToTest stringValue];
+	NSRange range = [host rangeOfString:@"."];
+	if (range.location != NSNotFound)
+		[self startTraceroute:host];
+		
+	//[self startTraceroute:@"208.67.222.222"];
+	//[self startTraceroute:@"208.67.220.220"];
 
 	args = [NSArray arrayWithObject:@"myip.opendns.com"];
 	[self startTest:@"/usr/bin/nslookup" withArgs:args];
