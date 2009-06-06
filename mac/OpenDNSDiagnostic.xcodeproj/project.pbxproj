@@ -24,7 +24,7 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* diagnostic_mac_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = diagnostic_mac_Prefix.pch; sourceTree = "<group>"; };
-		7F6AA2E50FD9ED810027F7F3 /* diagnostic_mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = diagnostic_mac.app; path = build/Debug/diagnostic_mac.app; sourceTree = "<group>"; };
+		7F6AA2E50FD9ED810027F7F3 /* OpenDNS Diagnostic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "OpenDNS Diagnostic.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FBCCCF20FD99FA9007AE748 /* MainController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainController.h; sourceTree = "<group>"; };
 		7FBCCCF30FD99FA9007AE748 /* MainController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainController.m; sourceTree = "<group>"; };
 		7FBCCD3D0FD9AB0A007AE748 /* Process.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Process.h; sourceTree = "<group>"; };
@@ -76,7 +76,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				7F6AA2E50FD9ED810027F7F3 /* diagnostic_mac.app */,
+				7F6AA2E50FD9ED810027F7F3 /* OpenDNS Diagnostic.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -139,7 +139,7 @@
 			name = OpenDNSDiagnostic;
 			productInstallPath = "$(HOME)/Applications";
 			productName = diagnostic_mac;
-			productReference = 7F6AA2E50FD9ED810027F7F3 /* diagnostic_mac.app */;
+			productReference = 7F6AA2E50FD9ED810027F7F3 /* OpenDNS Diagnostic.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -217,7 +217,7 @@
 				GCC_PREFIX_HEADER = diagnostic_mac_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				PRODUCT_NAME = diagnostic_mac;
+				PRODUCT_NAME = "OpenDNS Diagnostic";
 			};
 			name = Debug;
 		};
