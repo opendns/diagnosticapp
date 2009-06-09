@@ -12,6 +12,7 @@
 	
 	IBOutlet NSProgressIndicator *progressIndicator;
 	IBOutlet NSTextField *	textStatus;
+	IBOutlet NSScrollView * textResultsLinkView;
 	IBOutlet NSTextView *	textResultsLink;
 	
 	NSString *				results;

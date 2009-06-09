@@ -7,6 +7,8 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
 @interface MainController (Private)
 - (void)onHttpDone;
 - (void)onHttpError;
+- (void) setTextView:(NSTextView*)textView string:(NSString*)aString;
+- (void)hiliteAndActivateURLs:(NSTextView*)textView;
 @end
 
 @implementation MainController
@@ -19,6 +21,78 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
 											 selector:@selector(processFinished:)
 												 name:NSTaskDidTerminateNotification
 											   object:nil];
+
+	//[self setTextView:textResultsLink string:@"See results at http://opendnsupdate.appspot.com/diagnostic/b28d25750cbaa084dbaee24ad06efdec187a115d"];
+	[textResultsLinkView setHidden:TRUE];
+}
+
+- (void) setTextView:(NSTextView*)textView string:(NSString*)aString
+{
+	NSTextStorage *ts = [textView textStorage];
+	[ts beginEditing];
+	NSString *s = [ts string];
+	unsigned len = [s length];
+	NSRange r = NSMakeRange(0, len);
+	[ts deleteCharactersInRange:r];
+	
+	NSAttributedString *attrString =
+	[[NSAttributedString alloc] initWithString:aString
+									attributes:nil];
+	[ts setAttributedString:attrString];
+	[ts endEditing];
+	[self hiliteAndActivateURLs:textView];
+}
+
+- (void)hiliteAndActivateURLs:(NSTextView*)textView
+{
+	
+	NSTextStorage* textStorage=[textView textStorage];
+	NSString* string=[textStorage string];
+	NSRange searchRange=NSMakeRange(0, [string length]);
+	NSRange foundRange;
+	
+	[textStorage beginEditing];
+	do {
+		//We assume that all URLs start with http://
+		foundRange=[string rangeOfString:@"http://" options:0 range:searchRange];
+		
+		if (foundRange.length > 0) { //Did we find a URL?
+			NSURL* theURL;
+			NSDictionary* linkAttributes;
+			NSRange endOfURLRange;
+			
+			//Restrict the searchRange so that it won't find the same string again
+			searchRange.location=foundRange.location+foundRange.length;
+			searchRange.length = [string length]-searchRange.location;
+			
+			//We assume the URL ends with whitespace
+			endOfURLRange=[string rangeOfCharacterFromSet:
+						   [NSCharacterSet whitespaceAndNewlineCharacterSet]
+												  options:0 range:searchRange];
+			
+			//The URL could also end at the end of the text.  The next line fixes it in case it does
+			if (endOfURLRange.length==0)  // BUGFIX - was location == 0
+				endOfURLRange.location=[string length]-1;
+			
+			//Set foundRange's length to the length of the URL
+			foundRange.length = endOfURLRange.location-foundRange.location+1;
+			
+			//grab the URL from the text
+			theURL=[NSURL URLWithString:[string substringWithRange:foundRange]];
+			
+			//Make the link attributes
+			linkAttributes= [NSDictionary dictionaryWithObjectsAndKeys: theURL, NSLinkAttributeName,
+							 [NSNumber numberWithInt:NSSingleUnderlineStyle], NSUnderlineStyleAttributeName,
+							 [NSColor blueColor], NSForegroundColorAttributeName,
+							 NULL];
+			
+			//Finally, apply those attributes to the URL in the text
+			[textStorage addAttributes:linkAttributes range:foundRange];
+		}
+		
+	} while (foundRange.length!=0); //repeat the do block until it no longer finds anything
+	
+	[textStorage endEditing];
 }
 
 - (void) deallocate
@@ -44,6 +118,7 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
 
 - (void) showProgress
 {
+	[textResultsLinkView setHidden:TRUE];
 	[textStatus setHidden:FALSE];
 	[progressIndicator setHidden:FALSE];
 	[progressIndicator startAnimation:nil];
@@ -212,11 +287,17 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
 	resultsUrl = [aHttp reply];
 	[resultsUrl retain];
 	[aHttp release];
+
+	NSString *s = [NSString stringWithFormat:@"See results at %@", resultsUrl];
+	[self setTextView:textResultsLink string:s];
+	[textResultsLinkView setHidden:FALSE];
 }
 
 - (void)onHttpError:(Http*)aHttp
 {
 	[aHttp release];	
+	[self setTextView:textResultsLink string:@"Error submitting the results"];
+	[textResultsLinkView setHidden:FALSE];
 }
 
 - (void)submitResults
@@ -231,7 +312,6 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
 					delegate:self
 				  doneSelector:@selector(onHttpDone:)
 				  errorSelector:@selector(onHttpError:)];
-	
 }
 
 - (void)handleAllTestsFinished
