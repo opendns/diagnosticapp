@@ -22,6 +22,7 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
 												 name:NSTaskDidTerminateNotification
 											   object:nil];
 
+	[[NSApplication sharedApplication] setDelegate:self];
 	//[self setTextView:textResultsLink string:@"See results at http://opendnsupdate.appspot.com/diagnostic/b28d25750cbaa084dbaee24ad06efdec187a115d"];
 	[textResultsLinkView setHidden:TRUE];
 }
@@ -93,6 +94,11 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
 	} while (foundRange.length!=0); //repeat the do block until it no longer finds anything
 	
 	[textStorage endEditing];
+}
+
+- (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)theApplication
+{
+	return YES;
 }
 
 - (void) deallocate
