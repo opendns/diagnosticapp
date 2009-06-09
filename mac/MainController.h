@@ -14,7 +14,8 @@
 	IBOutlet NSTextField *	textStatus;
 	IBOutlet NSScrollView * textResultsLinkView;
 	IBOutlet NSTextView *	textResultsLink;
-	
+	IBOutlet NSWindow *		window;
+
 	NSString *				results;
 	NSString *				resultsUrl;
 }

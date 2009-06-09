@@ -3,6 +3,7 @@
 #import "Http.h"
 
 static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnosticsubmit";
+static NSString *WIN_TITLE = @"OpenDNS Diagnostic v 0.1";
 
 @interface MainController (Private)
 - (void)onHttpDone;
@@ -24,6 +25,7 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
 
 	[[NSApplication sharedApplication] setDelegate:self];
 	//[self setTextView:textResultsLink string:@"See results at http://opendnsupdate.appspot.com/diagnostic/b28d25750cbaa084dbaee24ad06efdec187a115d"];
+	[window setTitle:WIN_TITLE];
 	[textResultsLinkView setHidden:TRUE];
 }
 
