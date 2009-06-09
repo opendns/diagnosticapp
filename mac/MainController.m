@@ -1,5 +1,13 @@
 #import "MainController.h"
 #import "Process.h"
+#import "Http.h"
+
+static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnosticsubmit";
+
+@interface MainController (Private)
+- (void)onHttpDone;
+- (void)onHttpError;
+@end
 
 @implementation MainController
 
@@ -193,8 +201,28 @@
 	results = [tmp retain];		
 }
 
+- (void)onHttpDone:(Http*)aHttp
+{
+	[aHttp release];
+}
+
+- (void)onHttpError:(Http*)aHttp
+{
+	[aHttp release];	
+}
+
 - (void)submitResults
 {
+	const char *utf8 = [results UTF8String];
+	unsigned len = strlen(utf8);
+	NSData *data = [NSData dataWithBytes:(const void*)utf8 length:len];
+	NSURL *url = [NSURL URLWithString:REPORT_SUBMIT_URL];
+	Http *http = [[Http alloc] 
+					initWithURL:url
+					data:data
+					delegate:self
+				  doneSelector:@selector(onHttpDone:)
+				  errorSelector:@selector(onHttpError:)];
 	
 }
 
