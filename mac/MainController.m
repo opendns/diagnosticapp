@@ -10,6 +10,7 @@ static NSString *WIN_TITLE = @"OpenDNS Diagnostic v 0.1";
 - (void)onHttpError;
 - (void) setTextView:(NSTextView*)textView string:(NSString*)aString;
 - (void)hiliteAndActivateURLs:(NSTextView*)textView;
+- (void) rememberAccountAndTicketNo;
 @end
 
 @implementation MainController
@@ -182,10 +183,36 @@ static NSString *WIN_TITLE = @"OpenDNS Diagnostic v 0.1";
 	[self startTest:@"/usr/sbin/traceroute" withArgs:args comment:nil];
 }
 
+- (void) freeAccountAndTicketNo
+{
+	[txtOpenDnsAccount release];
+	txtOpenDnsAccount = nil;
+	[txtTicketNo release];
+	txtTicketNo = nil;
+}
+
+- (void) rememberAccountAndTicketNo
+{
+	[self freeAccountAndTicketNo];
+	NSString *s;
+	s = [textOpenDnsAccount stringValue];
+	s = [s stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+	if (s && [s length] > 0) {
+		txtOpenDnsAccount = [s copy];
+	}
+
+	s = [textTicketNo stringValue];
+	s = [s stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+	if (s && [s length] > 0) {
+		txtTicketNo = [s copy];
+	}
+}
+
 - (void) startTests
 {
 	NSArray *args;
 
+	[self rememberAccountAndTicketNo];
 	[self disableUI];
 	[processes removeAllObjects];
 
@@ -280,14 +307,24 @@ static NSString *WIN_TITLE = @"OpenDNS Diagnostic v 0.1";
 
 - (void)buildResults
 {
-	NSMutableString *tmp = [NSMutableString stringWithCapacity:2048];
+	NSMutableString *res = [NSMutableString stringWithCapacity:2048];
+	if (txtOpenDnsAccount) {
+		[res appendString:@"OpenDNS account: "];
+		[res appendString:txtOpenDnsAccount];
+	}
+
+	if (txtTicketNo) {
+		[res appendString:@"OpenDNS ticket: "];
+		[res appendString:txtTicketNo];
+	}
+
 	unsigned count = [processes count];
 	for (unsigned i = 0; i < count; i++) {
 		Process *process = [processes objectAtIndex:i];
-		NSString *res = [process getResult];
-		[tmp appendString:res];
+		NSString *s = [process getResult];
+		[res appendString:s];
 	}
-	results = [tmp retain];		
+	results = [res retain];		
 }
 
 - (void)onHttpDone:(Http*)aHttp
@@ -314,12 +351,12 @@ static NSString *WIN_TITLE = @"OpenDNS Diagnostic v 0.1";
 	unsigned len = strlen(utf8);
 	NSData *data = [NSData dataWithBytes:(const void*)utf8 length:len];
 	NSURL *url = [NSURL URLWithString:REPORT_SUBMIT_URL];
-	Http *http = [[Http alloc] 
-					initWithURL:url
-					data:data
-					delegate:self
-				  doneSelector:@selector(onHttpDone:)
-				  errorSelector:@selector(onHttpError:)];
+	[[Http alloc]
+				initWithURL:url
+				data:data
+				delegate:self
+				doneSelector:@selector(onHttpDone:)
+				errorSelector:@selector(onHttpError:)];
 }
 
 - (void)handleAllTestsFinished

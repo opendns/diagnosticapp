@@ -16,6 +16,9 @@
 	IBOutlet NSTextView *	textResultsLink;
 	IBOutlet NSWindow *		window;
 
+	NSString *				txtOpenDnsAccount;
+	NSString *				txtTicketNo;
+
 	NSString *				results;
 	NSString *				resultsUrl;
 }
