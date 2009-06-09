@@ -5,10 +5,10 @@
 	NSPipe *pipeStdOut;
 	NSPipe *pipeStdErr;
 	
-	NSString *stdOutUtf8;
-	NSString *stdErrUtf8;
+	NSString *stdOut;
+	NSString *stdErr;
 
-	NSString *comment;
+	NSString *displayName;
 
 	BOOL finished;
 }
@@ -17,5 +17,6 @@
 - (void)finish;
 - (BOOL)isProcessForTask:(NSTask*)aTask;
 - (BOOL)isFinished;
+- (NSString *)getResult;
 
 @end

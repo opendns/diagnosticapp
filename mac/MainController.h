@@ -12,6 +12,8 @@
 	
 	IBOutlet NSProgressIndicator *progressIndicator;
 	IBOutlet NSTextField *textStatus;
+	
+	NSString *results;
 }
 
 - (IBAction) runTests:(id)sender;

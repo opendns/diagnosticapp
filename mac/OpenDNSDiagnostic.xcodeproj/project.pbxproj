@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1DDD58140DA1D0A300B32029 /* MainMenu.xib */; };
+		7F6EFBAF0FDDCBE70094BC8C /* Http.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F6EFBAE0FDDCBE70094BC8C /* Http.m */; };
 		7FBCCCF40FD99FA9007AE748 /* MainController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FBCCCF30FD99FA9007AE748 /* MainController.m */; };
 		7FBCCD3F0FD9AB0A007AE748 /* Process.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FBCCD3E0FD9AB0A007AE748 /* Process.m */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
@@ -25,6 +26,8 @@
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* diagnostic_mac_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = diagnostic_mac_Prefix.pch; sourceTree = "<group>"; };
 		7F6AA2E50FD9ED810027F7F3 /* OpenDNS Diagnostic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "OpenDNS Diagnostic.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7F6EFBAD0FDDCBE70094BC8C /* Http.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Http.h; sourceTree = "<group>"; };
+		7F6EFBAE0FDDCBE70094BC8C /* Http.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Http.m; sourceTree = "<group>"; };
 		7FBCCCF20FD99FA9007AE748 /* MainController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainController.h; sourceTree = "<group>"; };
 		7FBCCCF30FD99FA9007AE748 /* MainController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainController.m; sourceTree = "<group>"; };
 		7FBCCD3D0FD9AB0A007AE748 /* Process.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Process.h; sourceTree = "<group>"; };
@@ -51,6 +54,8 @@
 				7FBCCCF30FD99FA9007AE748 /* MainController.m */,
 				7FBCCD3D0FD9AB0A007AE748 /* Process.h */,
 				7FBCCD3E0FD9AB0A007AE748 /* Process.m */,
+				7F6EFBAD0FDDCBE70094BC8C /* Http.h */,
+				7F6EFBAE0FDDCBE70094BC8C /* Http.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -179,6 +184,7 @@
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
 				7FBCCCF40FD99FA9007AE748 /* MainController.m in Sources */,
 				7FBCCD3F0FD9AB0A007AE748 /* Process.m in Sources */,
+				7F6EFBAF0FDDCBE70094BC8C /* Http.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -13,6 +13,11 @@
 											   object:nil];
 }
 
+- (void) deallocate
+{
+	[results release];
+}
+
 - (void) disableUI
 {
 	[buttonStartTests setEnabled:FALSE];
@@ -176,8 +181,27 @@
 	return TRUE;
 }
 
+- (void)buildResults
+{
+	NSMutableString *tmp = [NSMutableString stringWithCapacity:2048];
+	unsigned count = [processes count];
+	for (unsigned i = 0; i < count; i++) {
+		Process *process = [processes objectAtIndex:i];
+		NSString *res = [process getResult];
+		[tmp appendString:res];
+	}
+	results = [tmp retain];		
+}
+
+- (void)submitResults
+{
+	
+}
+
 - (void)handleAllTestsFinished
 {
+	[self buildResults];
+	[self submitResults];
 	[self enableUI];
 	[self hideProgress];
 }
