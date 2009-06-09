@@ -5,7 +5,7 @@ static NSString * const FORM_FLE_INPUT = @"file";
 
 @interface Http (Private)
 
-- (void)upload;
+- (void)upload:(NSData*)aData;
 
 - (NSURLRequest *)postRequestWithURL: (NSURL *)url
                              boundry: (NSString *)boundry
@@ -37,7 +37,7 @@ static NSString * const FORM_FLE_INPUT = @"file";
 		doneSelector = aDoneSelector;
 		errorSelector = anErrorSelector;
 
-		[self upload];
+		[self upload:aData];
 	}
 	return self;
 }
@@ -115,10 +115,7 @@ Error:
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)aData
 {
-	reply = [[[NSString alloc] initWithData:aData
-											 encoding:NSUTF8StringEncoding]
-					   autorelease];
-
+	reply = [[NSString alloc] initWithData:aData encoding:NSUTF8StringEncoding];
 	uploadDidSucceed = YES;
 }
 

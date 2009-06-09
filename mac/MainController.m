@@ -69,6 +69,12 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
 	[self startTests];
 }
 
+- (IBAction) gotoResultsUrl:(id)sender
+{
+	NSURL *url = [NSURL URLWithString:results];
+	[[NSWorkspace sharedWorkspace] openURL:url];
+}
+
 - (void) startTest:(NSString*)exe withArgs:(NSArray*)args comment:(NSString*)aComment
 {
 	Process * process = [[Process alloc] init];
@@ -203,6 +209,8 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
 
 - (void)onHttpDone:(Http*)aHttp
 {
+	resultsUrl = [aHttp reply];
+	[resultsUrl retain];
 	[aHttp release];
 }
 

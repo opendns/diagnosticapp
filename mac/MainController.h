@@ -3,20 +3,23 @@
 #define APP_VER @"0.1"
 
 @interface MainController : NSObject {
-	NSMutableArray *processes;
+	NSMutableArray *		processes;
 	
-	IBOutlet NSButton *buttonStartTests;
-	IBOutlet NSTextField *textOpenDnsAccount;
-	IBOutlet NSTextField *textTicketNo;
-	IBOutlet NSTextField *textDomainToTest;	
+	IBOutlet NSButton *		buttonStartTests;
+	IBOutlet NSTextField *	textOpenDnsAccount;
+	IBOutlet NSTextField *	textTicketNo;
+	IBOutlet NSTextField *	textDomainToTest;	
 	
 	IBOutlet NSProgressIndicator *progressIndicator;
-	IBOutlet NSTextField *textStatus;
+	IBOutlet NSTextField *	textStatus;
+	IBOutlet NSTextView *	textResultsLink;
 	
-	NSString *results;
+	NSString *				results;
+	NSString *				resultsUrl;
 }
 
 - (IBAction) runTests:(id)sender;
+- (IBAction) gotoResultsUrl:(id)sender;
 - (void) startTests;
 - (void) processFinished:(NSNotification*)aNotification;
 - (unsigned)finishedTasksCount;
