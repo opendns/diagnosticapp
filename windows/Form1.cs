@@ -17,6 +17,7 @@ namespace OpenDnsDiagnostic
         public static string APP_VER = "1.0.2";
         //public static string REPORT_SUBMIT_URL = "http://127.0.0.1/diagnosticsubmit";
         public static string REPORT_SUBMIT_URL = "http://opendnsupdate.appspot.com/diagnosticsubmit";
+        public static string AUTO_UPDATE_BASE_URL = "https://www.opendns.com/upgrade/windows/diagnostic/";
         List<TestStatus> Tests;
         LinkLabel SeeResultsLabel;
         Label FinishedCountLabel;
@@ -24,6 +25,7 @@ namespace OpenDnsDiagnostic
         string ResultsUrl;
         string AutoDetectedUserName;
 
+        delegate void AutoUpgradeCheckDelegate();
         public Form1()
         {
             InitializeComponent();
@@ -34,6 +36,9 @@ namespace OpenDnsDiagnostic
             this.textBoxUserName.KeyDown += new KeyEventHandler(textBox_OnKeyDownHandler);
             AutoDetectOpenDnsUserName();
             FillAutoDetectedUserName();
+
+            var myDelegate = new AutoUpgradeCheckDelegate(AutoUpgradeCheckBackground);
+            myDelegate.BeginInvoke(null, null);
         }
 
         private void buttonExit_Click(object sender, EventArgs e)
@@ -469,5 +474,66 @@ namespace OpenDnsDiagnostic
         {
             RunAllTests();
         }
+
+        struct UpgradeJsonResponse
+        {
+            public bool upgrade;
+            public bool force;
+            public string version;
+            public string download;
+        }
+
+        static public void LaunchBrowser(string url)
+        {
+            Process.Start(url);
+        }
+
+        public void AutoUpgradeCheckBackground()
+        {
+            string autoUpdateArgs = "?version=" + APP_VER;
+            var autoUpdateUrl = AUTO_UPDATE_BASE_URL + autoUpdateArgs;
+            UpgradeJsonResponse json;
+            try
+            {
+                WebRequest request = WebRequest.Create(autoUpdateUrl);
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                Stream responsedata = response.GetResponseStream();
+                StreamReader responsereader = new StreamReader(responsedata);
+                string responseStr = responsereader.ReadToEnd();
+                json = JsonMapper.ToObject<UpgradeJsonResponse>(responseStr);
+            }
+            catch
+            {
+                // it's ok if we fail
+                return;
+            }
+            if (!json.upgrade)
+                return;
+            ShowUpgradeAvailableThreadSafe(json.force, json.version, json.download);
+        }
+
+        delegate void ShowUpgradeAvailableDelegate(bool force, string version, string downloadUrl);
+        private void ShowUpgradeAvailableThreadSafe(bool force, string version, string downloadUrl)
+        {
+            if (this.InvokeRequired)
+            {
+                var myDelegate = new ShowUpgradeAvailableDelegate(ShowUpgradeAvailableThreadSafe);
+                this.BeginInvoke(myDelegate, new object[] { force, version, downloadUrl });
+                return;
+            }
+            string s;
+            if (force)
+            {
+                s = String.Format("You need to update to version {0}.", version);
+                MessageBox.Show(s);
+                LaunchBrowser(downloadUrl);
+                Application.Exit();
+            }
+            s = String.Format("New version {0} is available. Do you want to update?", version);
+            var res = MessageBox.Show(s, "Update available", MessageBoxButtons.YesNo);
+            if (DialogResult.Yes == res)
+                LaunchBrowser(downloadUrl);
+        }
+
     }
 }
