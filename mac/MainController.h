@@ -23,10 +23,7 @@
 	NSString *				resultsUrl;
 }
 
-- (IBAction) runTests:(id)sender;
-- (IBAction) gotoResultsUrl:(id)sender;
-- (void) startTests;
-- (void) processFinished:(NSNotification*)aNotification;
+- (IBAction)runTests:(id)sender;
 - (unsigned)finishedTasksCount;
 
 @end

@@ -1,10 +1,21 @@
 #import "Process.h"
 
+NSString * const ProcessTerminatedNotification = @"ProcessTerminatedNotification";
+
+@interface Process (Private)
+- (void)terminatedNotification:(NSNotification*)aNotification;
+- (void)stdOutNotification:(NSNotification*)aNotification;
+- (void)stdErrNotification:(NSNotification*)aNotification;
+- (void)buildDisplayName:(NSString*)exePath withArgs:(NSArray*)args comment:(NSString*)aComment;
+@end
+
 @implementation Process
 
 - (void)dealloc
 {
 	[displayName release];
+	[stdOutData release];
+	[stdErrData release];
 	[super dealloc];
 }
 
@@ -30,34 +41,72 @@
     [task setLaunchPath: exePath];
     [task setArguments: args];	
 
-    pipeStdOut = [NSPipe pipe];
-    [task setStandardOutput: pipeStdOut];	
+    [task setStandardOutput: [NSPipe pipe]];	
+    [task setStandardError: [NSPipe pipe]];	
 
-    pipeStdErr = [NSPipe pipe];
-    [task setStandardError: pipeStdErr];	
+	stdOutData = [[NSMutableData alloc] init];
+	stdErrData = [[NSMutableData alloc] init];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(terminatedNotification:)
+												 name:NSTaskDidTerminateNotification
+											   object:task];
+
+	NSFileHandle *stdOutHandle = [[task standardOutput] fileHandleForReading];
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(stdOutNotification:) 
+												 name:NSFileHandleDataAvailableNotification
+											   object:stdOutHandle];
+	[stdOutHandle waitForDataInBackgroundAndNotify];
+
+	NSFileHandle *stdErrHandle = [[task standardError] fileHandleForReading];
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(stdErrNotification:) 
+												 name:NSFileHandleDataAvailableNotification
+											   object:stdErrHandle];
+	[stdErrHandle waitForDataInBackgroundAndNotify];
 
     [task launch];
 }
 
-- (BOOL)isProcessForTask:(NSTask*)aTask
+- (void)terminatedNotification:(NSNotification*)aNotification
 {
-	if (task == aTask)
-		return TRUE;
-	return FALSE;
+	NSFileHandle *	fileHandle;
+	NSData *		data;
+
+	NSTask *aTask = [aNotification object];
+	NSAssert(task == aTask, @"");
+
+	fileHandle = [[task standardOutput] fileHandleForReading];
+	data = [fileHandle readDataToEndOfFile];
+	[stdOutData appendData:data];
+	
+	fileHandle = [[task standardError] fileHandleForReading];
+	data = [fileHandle readDataToEndOfFile];
+	[stdErrData appendData:data];
+	
+    stdOutStr = [[NSString alloc] initWithData: stdOutData 
+									  encoding: NSUTF8StringEncoding];
+    stdErrStr = [[NSString alloc] initWithData: stdErrData 
+									  encoding: NSUTF8StringEncoding];
+	[task release];
+	finished = TRUE;
+	[[NSNotificationCenter defaultCenter] postNotificationName:ProcessTerminatedNotification
+														object:self];
 }
 
-- (void)finish
+- (void)stdOutNotification:(NSNotification*)aNotification
 {
-    NSFileHandle *file = [pipeStdOut fileHandleForReading];
-    NSData *data = [file readDataToEndOfFile];
-    stdOut = [[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding];
+    NSFileHandle *stdOutFile = (NSFileHandle *)[aNotification object];
+    [stdOutData appendData:[stdOutFile availableData]];
+    [stdOutFile waitForDataInBackgroundAndNotify];	
+}
 
-    file = [pipeStdErr fileHandleForReading];
-	data = [file readDataToEndOfFile];
-    stdErr = [[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding];
-	[task release];
-
-	finished = TRUE;
+- (void)stdErrNotification:(NSNotification*)aNotification
+{
+    NSFileHandle *stdErrFile = (NSFileHandle *)[aNotification object];
+    [stdErrData appendData:[stdErrFile availableData]];
+    [stdErrFile waitForDataInBackgroundAndNotify];	
 }
 
 - (BOOL)isFinished
@@ -73,17 +122,17 @@
 	[res appendString:displayName];
 	[res appendString:@"\n"];
 
-	if (stdOut && [stdOut length] > 0)
+	if (stdOutStr && [stdOutStr length] > 0)
 	{
 		[res appendString:@"stdout:\n"];
-		[res appendString:stdOut];
+		[res appendString:stdOutStr];
 		[res appendString:@"\n"];
 	}
 
-	if (stdErr && [stdErr length] > 0)
+	if (stdErrStr && [stdErrStr length] > 0)
 	{
 		[res appendString:@"stderr:\n"];
-		[res appendString:stdErr];
+		[res appendString:stdErrStr];
 		[res appendString:@"\n"];
 	}
 	return res;

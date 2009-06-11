@@ -1,21 +1,21 @@
 #import <Cocoa/Cocoa.h>
 
+extern NSString * const ProcessTerminatedNotification;
+
 @interface Process : NSObject {
-	NSTask *task;
-	NSPipe *pipeStdOut;
-	NSPipe *pipeStdErr;
+	NSTask *		task;
 	
-	NSString *stdOut;
-	NSString *stdErr;
+	NSMutableData *	stdOutData;
+	NSMutableData *	stdErrData;
+	NSString *		stdOutStr;
+	NSString *		stdErrStr;
 
-	NSString *displayName;
+	NSString *		displayName;
 
-	BOOL finished;
+	BOOL			finished;
 }
 
 - (void)start:(NSString*)exe withArgs:(NSArray*)args comment:(NSString*)aComment;
-- (void)finish;
-- (BOOL)isProcessForTask:(NSTask*)aTask;
 - (BOOL)isFinished;
 - (NSString *)getResult;
 
