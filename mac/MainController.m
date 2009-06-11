@@ -25,9 +25,10 @@ static NSString *WIN_TITLE = @"OpenDNS Diagnostic v 0.1";
 											   object:nil];
 
 	[[NSApplication sharedApplication] setDelegate:self];
-	//[self setTextView:textResultsLink string:@"See results at http://opendnsupdate.appspot.com/diagnostic/b28d25750cbaa084dbaee24ad06efdec187a115d"];
-	[window setTitle:WIN_TITLE];
+	//[self setTextView:textResultsLink string:@"See results at http://opendnsupdate.appspot.com/d/24011"];
 	[textResultsLinkView setHidden:TRUE];
+
+	[window setTitle:WIN_TITLE];
 }
 
 - (void) setTextView:(NSTextView*)textView string:(NSString*)aString
