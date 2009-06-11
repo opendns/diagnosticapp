@@ -286,11 +286,13 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
 	if (txtOpenDnsAccount) {
 		[res appendString:@"OpenDNS account: "];
 		[res appendString:txtOpenDnsAccount];
+		[res appendString:@"\n"];
 	}
 
 	if (txtTicketNo) {
 		[res appendString:@"OpenDNS ticket: "];
 		[res appendString:txtTicketNo];
+		[res appendString:@"\n"];
 	}
 
 	unsigned count = [processes count];
