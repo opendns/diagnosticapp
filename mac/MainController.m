@@ -208,7 +208,7 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
 	NSRange range = [host rangeOfString:@"."];
 	if (range.location != NSNotFound)
 		[self startTraceroute:host];
-		
+
 	[self startTraceroute:@"208.67.222.222"];
 	[self startTraceroute:@"208.67.220.220"];
 

@@ -77,6 +77,9 @@ NSString * const ProcessTerminatedNotification = @"ProcessTerminatedNotification
 	NSTask *aTask = [aNotification object];
 	NSAssert(task == aTask, @"");
 
+	// mark as finished early, to disable further notifications on stdout and stderr
+	finished = TRUE;
+
 	fileHandle = [[task standardOutput] fileHandleForReading];
 	data = [fileHandle readDataToEndOfFile];
 	[stdOutData appendData:data];
@@ -90,13 +93,15 @@ NSString * const ProcessTerminatedNotification = @"ProcessTerminatedNotification
     stdErrStr = [[NSString alloc] initWithData: stdErrData 
 									  encoding: NSUTF8StringEncoding];
 	[task release];
-	finished = TRUE;
 	[[NSNotificationCenter defaultCenter] postNotificationName:ProcessTerminatedNotification
 														object:self];
 }
 
 - (void)stdOutNotification:(NSNotification*)aNotification
 {
+	// not sure why I'm getting those after the process has finished
+	if (finished)
+		return;
     NSFileHandle *stdOutFile = (NSFileHandle *)[aNotification object];
     [stdOutData appendData:[stdOutFile availableData]];
     [stdOutFile waitForDataInBackgroundAndNotify];	
@@ -104,6 +109,9 @@ NSString * const ProcessTerminatedNotification = @"ProcessTerminatedNotification
 
 - (void)stdErrNotification:(NSNotification*)aNotification
 {
+	// not sure why I'm getting those after the process has finished
+	if (finished)
+		return;
     NSFileHandle *stdErrFile = (NSFileHandle *)[aNotification object];
     [stdErrData appendData:[stdErrFile availableData]];
     [stdErrFile waitForDataInBackgroundAndNotify];	
