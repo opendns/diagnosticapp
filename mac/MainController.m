@@ -3,6 +3,7 @@
 #import "Http.h"
 
 static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnosticsubmit";
+//static NSString *REPORT_SUBMIT_URL = @"http://127.0.0.1:8080/diagnosticsubmit";
 
 @interface MainController (Private)
 - (void)onHttpDone;
