@@ -1,7 +1,5 @@
 #import <Cocoa/Cocoa.h>
 
-#define APP_VER @"0.2"
-
 @interface MainController : NSObject {
 	NSMutableArray *		processes;
 	
