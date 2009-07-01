@@ -3,16 +3,16 @@
 extern NSString * const ProcessTerminatedNotification;
 
 @interface Process : NSObject {
-	NSTask *		task;
-	
-	NSMutableData *	stdOutData;
-	NSMutableData *	stdErrData;
-	NSString *		stdOutStr;
-	NSString *		stdErrStr;
+    NSTask *            task;
 
-	NSString *		displayName;
+    NSMutableData *     stdOutData;
+    NSMutableData *     stdErrData;
+    NSString *          stdOutStr;
+    NSString *          stdErrStr;
 
-	BOOL			finished;
+    NSString *          displayName;
+
+    BOOL                finished;
 }
 
 - (void)start:(NSString*)exe withArgs:(NSArray*)args comment:(NSString*)aComment;

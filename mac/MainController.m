@@ -69,10 +69,11 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
             
             endOfURLRange=[string rangeOfCharacterFromSet:
                                        [NSCharacterSet whitespaceAndNewlineCharacterSet]
-                                                                                      options:0 range:searchRange];
+                                                  options:0 
+                                                    range:searchRange];
             
             if (endOfURLRange.length==0)
-                    endOfURLRange.location=[string length]-1;
+                endOfURLRange.location=[string length]-1;
 
             foundRange.length = endOfURLRange.location-foundRange.location+1;
             theURL=[NSURL URLWithString:[string substringWithRange:foundRange]];			
@@ -88,34 +89,29 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
     [textStorage endEditing];
 }
 
-- (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)theApplication
-{
+- (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)theApplication {
     return YES;
 }
 
-- (void)deallocate
-{
+- (void)deallocate {
     [results release];
 }
 
-- (void)disableUI
-{
+- (void)disableUI {
     [buttonStartTests setEnabled:FALSE];
     [textOpenDnsAccount setEnabled:FALSE];
     [textTicketNo setEnabled:FALSE];
     [textDomainToTest setEnabled:FALSE];
 }
 
-- (void)enableUI
-{
+- (void)enableUI {
     [buttonStartTests setEnabled:TRUE];
     [textOpenDnsAccount setEnabled:TRUE];
     [textTicketNo setEnabled:TRUE];
     [textDomainToTest setEnabled:TRUE];
 }
 
-- (void)showProgress
-{
+- (void)showProgress {
     [self updateProgress];
     [textResultsLinkView setHidden:TRUE];
     [textStatus setHidden:FALSE];
@@ -123,28 +119,24 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
     [progressIndicator startAnimation:nil];
 }
 
-- (void)hideProgress
-{
+- (void)hideProgress {
     [textStatus setHidden:TRUE];
     [progressIndicator stopAnimation:nil];
     [progressIndicator setHidden:TRUE];	
 }
 
-- (void)updateProgress
-{
+- (void)updateProgress {
     unsigned count = [processes count];
     unsigned finished = [self finishedTasksCount];
     NSString *s = [NSString stringWithFormat:@"Please wait. Finished %d out of %d tests.", (int)finished, (int)count];
     [textStatus setStringValue:s];
 }
 
-- (IBAction)runTests:(id)sender
-{
+- (IBAction)runTests:(id)sender {
     [self startTests];
 }
 
-- (void)startTest:(NSString*)exe withArgs:(NSArray*)args comment:(NSString*)aComment
-{
+- (void)startTest:(NSString*)exe withArgs:(NSArray*)args comment:(NSString*)aComment {
     Process * process = [[Process alloc] init];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(processTerminatedNotification:) 
@@ -155,33 +147,28 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
     [process start:exe withArgs:args comment:aComment];
 }
 
-- (void)startTest:(NSString*)exe withArgs:(NSArray*)args
-{
+- (void)startTest:(NSString*)exe withArgs:(NSArray*)args {
     [self startTest:exe withArgs:args comment:nil];
 }
 
-- (void)startPing:(NSString*)addr comment:(NSString*)aComment
-{
+- (void)startPing:(NSString*)addr comment:(NSString*)aComment {
     NSArray *args = [NSArray arrayWithObjects: @"-c", @"5", addr, nil];
     [self startTest:@"/sbin/ping" withArgs:args comment:aComment];
 }
 
-- (void)startTraceroute:(NSString*)addr
-{
+- (void)startTraceroute:(NSString*)addr {
     NSArray *args = [NSArray arrayWithObjects: @"-I", @"-w 2", addr, nil];
     [self startTest:@"/usr/sbin/traceroute" withArgs:args comment:nil];
 }
 
-- (void)freeAccountAndTicketNo
-{
+- (void)freeAccountAndTicketNo {
     [txtOpenDnsAccount release];
     txtOpenDnsAccount = nil;
     [txtTicketNo release];
     txtTicketNo = nil;
 }
 
-- (void)rememberAccountAndTicketNo
-{
+- (void)rememberAccountAndTicketNo {
     [self freeAccountAndTicketNo];
     NSString *s;
     s = [textOpenDnsAccount stringValue];
@@ -197,8 +184,7 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
     }
 }
 
-- (void)startTests
-{
+- (void)startTests {
     NSArray *args;
 
     [self rememberAccountAndTicketNo];
@@ -258,8 +244,7 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
     [self showProgress];
 }
 
-- (unsigned)finishedTasksCount
-{
+- (unsigned)finishedTasksCount {
     unsigned count = [processes count];
     unsigned finishedCount = 0;
     for (unsigned i = 0; i < count; i++) {
@@ -270,8 +255,7 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
     return finishedCount;
 }
 
-- (BOOL)didAllTestsFinished
-{
+- (BOOL)didAllTestsFinished {
     unsigned count = [processes count];
     for (unsigned i = 0; i < count; i++) {
         Process *process = [processes objectAtIndex:i];
@@ -281,8 +265,7 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
     return TRUE;
 }
 
-- (void)buildResults
-{
+- (void)buildResults {
     NSMutableString *res = [NSMutableString stringWithCapacity:2048];
     if (txtOpenDnsAccount) {
         [res appendString:@"OpenDNS account: "];
@@ -305,8 +288,7 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
     results = [res retain];		
 }
 
-- (void)onHttpDone:(Http*)aHttp
-{
+- (void)onHttpDone:(Http*)aHttp {
     resultsUrl = [aHttp reply];
     [resultsUrl retain];
     [aHttp release];
@@ -316,15 +298,13 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
     [textResultsLinkView setHidden:FALSE];
 }
 
-- (void)onHttpError:(Http*)aHttp
-{
+- (void)onHttpError:(Http*)aHttp {
     [aHttp release];	
     [self setTextView:textResultsLink string:@"Error submitting the results"];
     [textResultsLinkView setHidden:FALSE];
 }
 
-- (void)submitResults
-{
+- (void)submitResults {
     const char *utf8 = [results UTF8String];
     unsigned len = strlen(utf8);
     NSData *data = [NSData dataWithBytes:(const void*)utf8 length:len];
@@ -336,16 +316,14 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
                 errorSelector:@selector(onHttpError:)];
 }
 
-- (void)handleAllTestsFinished
-{
+- (void)handleAllTestsFinished {
     [self buildResults];
     [self submitResults];
     [self enableUI];
     [self hideProgress];
 }
 
-- (void)processTerminatedNotification:(NSNotification *)aNotification
-{
+- (void)processTerminatedNotification:(NSNotification *)aNotification {
     [self updateProgress];
     if ([self didAllTestsFinished])
         [self handleAllTestsFinished];		
