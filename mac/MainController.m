@@ -235,7 +235,7 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
     [self startPing:@"192.153.156.3" comment:@"(att west coast)"];
     [self startPing:@"207.252.96.3" comment:@"(att east coast)"];
 
-    args = [NSArray arrayWithObject: @"aux"];
+    args = [NSArray arrayWithObject: @"wwaux"];
     [self startTest:@"/bin/ps" withArgs:args];
 
     args = [NSArray arrayWithObject: @"-a"];
