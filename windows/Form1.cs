@@ -14,7 +14,7 @@ namespace OpenDnsDiagnostic
 {
     public partial class Form1 : Form
     {
-        public static string APP_VER = "1.0.3";
+        public static string APP_VER = "1.0.4";
         //public static string REPORT_SUBMIT_URL = "http://127.0.0.1/diagnosticsubmit";
         public static string REPORT_SUBMIT_URL = "http://opendnsupdate.appspot.com/diagnosticsubmit";
         public static string AUTO_UPDATE_BASE_URL = "https://www.opendns.com/upgrade/windows/diagnostic/";
@@ -439,7 +439,7 @@ namespace OpenDnsDiagnostic
 
             Tests.Add(new ProcessStatus("tracert", "208.67.222.222"));
             Tests.Add(new ProcessStatus("tracert", "208.67.220.220"));
-            Tests.Add(new ProcessStatus("nslookup", "myip.opendns.com"));
+            Tests.Add(new ProcessStatus("nslookup", "myip.opendns.com."));
             Tests.Add(new ProcessStatus("nslookup", "-type=txt which.opendns.com. 208.67.222.222"));
             Tests.Add(new ProcessStatus("nslookup", "-type=txt -port=5353 which.opendns.com. 208.67.222.222"));
             Tests.Add(new ProcessStatus("nslookup", "-class=chaos -type=txt hostname.bind. 4.2.2.1"));
