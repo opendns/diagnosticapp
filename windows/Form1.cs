@@ -434,8 +434,15 @@ namespace OpenDnsDiagnostic
             string hostname = textBoxDomain.Text;
             Tests = new List<TestStatus>();
             Tests.Add(new DnsResolveStatus("myip.opendns.com"));
-            if (hostname.Contains(".")) // a weak test for a valid hostname
+            // a weak test for a valid hostname
+            if (hostname.Contains("."))
+            {
+                Uri host;
+                if (Uri.TryCreate(hostname, UriKind.Absolute, out host))
+                    hostname = host.DnsSafeHost;
                 Tests.Add(new ProcessStatus("tracert", hostname));
+
+            }
 
             Tests.Add(new ProcessStatus("tracert", "208.67.222.222"));
             Tests.Add(new ProcessStatus("tracert", "208.67.220.220"));
