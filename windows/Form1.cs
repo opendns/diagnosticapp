@@ -14,7 +14,7 @@ namespace OpenDnsDiagnostic
 {
     public partial class Form1 : Form
     {
-        public static string APP_VER = "1.0.4";
+        public static string APP_VER = "1.0.5";
         //public static string REPORT_SUBMIT_URL = "http://127.0.0.1/diagnosticsubmit";
         public static string REPORT_SUBMIT_URL = "http://opendnsupdate.appspot.com/diagnosticsubmit";
         public static string AUTO_UPDATE_BASE_URL = "https://www.opendns.com/upgrade/windows/diagnostic/";
