@@ -220,7 +220,7 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
     args = [NSArray arrayWithObjects: @"@udns1.ultradns.net", @"whoami.ultradns.net", nil];
     [self startTest:@"/usr/bin/dig" withArgs:args];
 
-    args = [NSArray arrayWithObjects: @"@208.67.222.222", @"debug.opendns.com.", nil];
+    args = [NSArray arrayWithObjects: @"@208.67.222.222", @"debug.opendns.com.", @"txt", nil];
     [self startTest:@"/usr/bin/dig" withArgs:args];
 
     [self startPing:@"208.67.219.99" comment:@"(www.opendns.com)"];
