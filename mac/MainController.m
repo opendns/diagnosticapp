@@ -240,7 +240,10 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
 
     args = [NSArray arrayWithObject: @"-a"];
     [self startTest:@"/sbin/ifconfig" withArgs:args];
-    
+
+    args = [NSArray arrayWithObject: @"--dns"];
+    [self startTest:@"/usr/sbin/scutil" withArgs:args];
+
     [self showProgress];
 }
 
