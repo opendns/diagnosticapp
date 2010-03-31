@@ -199,15 +199,15 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
     [self startTraceroute:@"208.67.222.222"];
     [self startTraceroute:@"208.67.220.220"];
 
-    args = [NSArray arrayWithObject:@"myip.opendns.com"];
+    args = [NSArray arrayWithObjects: @"@208.67.222.222", @"debug.opendns.com.", @"txt", nil];
     [self startTest:@"/usr/bin/dig" withArgs:args];
-
-    args = [NSArray arrayWithObjects: @"@208.67.222.222", @"which.opendns.com.", @"txt", nil];
-    [self startTest:@"/usr/bin/dig" withArgs:args];
-
-    args = [NSArray arrayWithObjects: @"-type=txt", @"-port=5353", @"which.opendns.com.", @"208.67.222.222", nil];
-    [self startTest:@"/usr/bin/nslookup" withArgs:args];
     
+    args = [NSArray arrayWithObjects: @"@208.67.222.222", @"-p", @"5353", @"debug.opendns.com.", @"txt", nil];
+    [self startTest:@"/usr/bin/dig" withArgs:args];
+    
+    args = [NSArray arrayWithObjects: @"debug.opendns.com.", @"txt", nil];
+    [self startTest:@"/usr/bin/dig" withArgs:args];
+
     args = [NSArray arrayWithObjects: @"-class=chaos", @"-type=txt", @"hostname.bind.", @"4.2.2.1", nil];
     [self startTest:@"/usr/bin/nslookup" withArgs:args];
 
@@ -218,9 +218,6 @@ static NSString *REPORT_SUBMIT_URL = @"http://opendnsupdate.appspot.com/diagnost
     [self startTest:@"/usr/bin/nslookup" withArgs:args];
 
     args = [NSArray arrayWithObjects: @"@udns1.ultradns.net", @"whoami.ultradns.net", nil];
-    [self startTest:@"/usr/bin/dig" withArgs:args];
-
-    args = [NSArray arrayWithObjects: @"@208.67.222.222", @"debug.opendns.com.", @"txt", nil];
     [self startTest:@"/usr/bin/dig" withArgs:args];
 
     [self startPing:@"208.67.219.99" comment:@"(www.opendns.com)"];
