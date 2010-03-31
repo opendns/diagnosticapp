@@ -14,7 +14,7 @@ namespace OpenDnsDiagnostic
 {
     public partial class Form1 : Form
     {
-        public static string APP_VER = "1.0.6";
+        public static string APP_VER = "1.0.7";
         //public static string REPORT_SUBMIT_URL = "http://127.0.0.1/diagnosticsubmit";
         public static string REPORT_SUBMIT_URL = "http://opendnsupdate.appspot.com/diagnosticsubmit";
         public static string AUTO_UPDATE_BASE_URL = "https://www.opendns.com/upgrade/windows/diagnostic/";
@@ -446,14 +446,13 @@ namespace OpenDnsDiagnostic
 
             Tests.Add(new ProcessStatus("tracert", "208.67.222.222"));
             Tests.Add(new ProcessStatus("tracert", "208.67.220.220"));
-            Tests.Add(new ProcessStatus("nslookup", "myip.opendns.com."));
-            Tests.Add(new ProcessStatus("nslookup", "-type=txt which.opendns.com. 208.67.222.222"));
-            Tests.Add(new ProcessStatus("nslookup", "-type=txt -port=5353 which.opendns.com. 208.67.222.222"));
+            Tests.Add(new ProcessStatus("nslookup", "-type=txt debug.opendns.com. 208.67.222.222"));
+            Tests.Add(new ProcessStatus("nslookup", "-type=txt -port=5353 debug.opendns.com. 208.67.222.222"));
+            Tests.Add(new ProcessStatus("nslookup", "-type=txt debug.opendns.com"));
             Tests.Add(new ProcessStatus("nslookup", "-class=chaos -type=txt hostname.bind. 4.2.2.1"));
             Tests.Add(new ProcessStatus("nslookup", "-class=chaos -type=txt hostname.bind. 192.33.4.12"));
             Tests.Add(new ProcessStatus("nslookup", "-class=chaos -type=txt hostname.bind. 204.61.216.4"));
             Tests.Add(new ProcessStatus("nslookup", "whoami.ultradns.net udns1.ultradns.net"));
-            Tests.Add(new ProcessStatus("nslookup", "-type=txt debug.opendns.com. 208.67.222.222"));
             var mps = new MultiProcessStatus("pings");
             Tests.Add(mps);
             mps.Processes.Add(new ProcessStatus("ping", "-n 5 208.67.219.99", "(www.opendns.com)"));
